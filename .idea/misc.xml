@@ -3,8 +3,13 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/activity_main.xml" value="0.10277777777777777" />
+        <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/activity_main.xml" value="0.15" />
         <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/activity_maps.xml" value="0.15555555555555556" />
+        <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/fragment_coba.xml" value="0.1" />
+        <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/fragment_detail_disaster_dialog.xml" value="0.371875" />
+        <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/fragment_maps.xml" value="0.25" />
+        <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/fragment_maps2.xml" value="0.1" />
+        <entry key="..\:/Android Studio Project/Skripsi/app/src/main/res/layout/fragment_need_permissions.xml" value="0.371875" />
       </map>
     </option>
   </component>

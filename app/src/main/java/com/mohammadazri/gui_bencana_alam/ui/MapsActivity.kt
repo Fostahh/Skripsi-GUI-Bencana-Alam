@@ -1,4 +1,4 @@
-package com.mohammadazri.gui_bencana_alam
+package com.mohammadazri.gui_bencana_alam.ui
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -23,6 +23,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.mohammadazri.gui_bencana_alam.R
 import com.mohammadazri.gui_bencana_alam.databinding.ActivityMapsBinding
 import java.io.IOException
 
@@ -141,7 +142,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             return
         }
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper())
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+            locationCallback,
+            Looper.getMainLooper())
     }
 
     private fun createLocationRequest() {

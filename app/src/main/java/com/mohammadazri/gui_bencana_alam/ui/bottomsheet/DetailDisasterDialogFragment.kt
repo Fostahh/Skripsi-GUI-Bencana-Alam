@@ -1,4 +1,4 @@
-package com.mohammadazri.gui_bencana_alam.bottomsheet
+package com.mohammadazri.gui_bencana_alam.ui.bottomsheet
 
 import android.os.Bundle
 import android.view.LayoutInflater

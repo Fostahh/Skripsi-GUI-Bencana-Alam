@@ -1,29 +1,24 @@
-package com.mohammadazri.gui_bencana_alam.fragment
+package com.mohammadazri.gui_bencana_alam.ui.fragment
 
 import android.Manifest
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
-import com.mohammadazri.gui_bencana_alam.MainActivity
 import com.mohammadazri.gui_bencana_alam.R
 import com.mohammadazri.gui_bencana_alam.databinding.FragmentNeedPermissionsBinding
-import com.mohammadazri.gui_bencana_alam.util.Constant
-import com.vmadalin.easypermissions.EasyPermissions
-import com.vmadalin.easypermissions.dialogs.SettingsDialog
+import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
+import dagger.hilt.android.AndroidEntryPoint
+import pub.devrel.easypermissions.AppSettingsDialog
+import pub.devrel.easypermissions.EasyPermissions
 
-
+@AndroidEntryPoint
 class NeedPermissionsFragment : Fragment(), EasyPermissions.PermissionCallbacks {
 
     private var _binding: FragmentNeedPermissionsBinding? = null
     private val binding get() = _binding!!
-    private val permissions = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION
-    )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,34 +32,40 @@ class NeedPermissionsFragment : Fragment(), EasyPermissions.PermissionCallbacks 
         super.onViewCreated(view, savedInstanceState)
 
         activity?.let {
-
             checkPermission()
 
-            binding.button.setOnClickListener {
+            binding.swipeRefresh.setOnRefreshListener {
                 checkPermission()
             }
         }
     }
 
     private fun checkPermission() {
-        if (hasLocationPermission()) {
+        binding.swipeRefresh.isRefreshing = false
+        if (PermissionUtility.isPermissionsGranted(requireContext())) {
             findNavController().navigate(R.id.action_needPermissionsFragment_to_mapsFragment)
         } else {
-            requestLocationPermission()
+            EasyPermissions.requestPermissions(
+                this,
+                "This app cannot work without Location Permission",
+                PERMISSION_LOCATION_REQUEST_CODE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
         }
     }
 
-    private fun requestLocationPermission() {
-        EasyPermissions.requestPermissions(
-            host = this,
-            rationale = "This app cannot work without Location Permission",
-            requestCode = PERMISSION_LOCATION_REQUEST_CODE,
-            perms = permissions
-        )
+    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            AppSettingsDialog.Builder(this).build().show()
+        } else {
+            checkPermission()
+        }
     }
 
-    private fun hasLocationPermission() =
-        EasyPermissions.hasPermissions(context = context, perms = permissions)
+    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
+        findNavController().navigate(R.id.action_needPermissionsFragment_to_mapsFragment)
+    }
 
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -74,18 +75,9 @@ class NeedPermissionsFragment : Fragment(), EasyPermissions.PermissionCallbacks 
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
     }
 
-    override fun onPermissionsDenied(requestCode: Int, perms: List<String>) {
-        if (EasyPermissions.somePermissionPermanentlyDenied(host = this,
-                deniedPerms = perms)
-        ) {
-            SettingsDialog.Builder(context ?: requireContext()).build().show()
-        } else {
-            requestLocationPermission()
-        }
-    }
-
-    override fun onPermissionsGranted(requestCode: Int, perms: List<String>) {
-        findNavController().navigate(R.id.action_needPermissionsFragment_to_mapsFragment)
+    override fun onResume() {
+        super.onResume()
+//        checkPermission()
     }
 
     companion object {

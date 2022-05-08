@@ -5,17 +5,15 @@ import android.location.Address
 import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
-import com.mohammadazri.gui_bencana_alam.core.data.Repository
 import com.mohammadazri.gui_bencana_alam.core.domain.usecase.UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
-class FragmentViewModel @Inject constructor(private val useCase: UseCase) : ViewModel() {
+class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewModel() {
 //    fun savePermissionsStatus(status: Boolean) = useCase.savePermissionsStatus(status)
 //    fun loadPermissionStatus(): Boolean = useCase.loadPermissionStatus()
 //    fun getLocationBasedOnGPS(): LiveData<>
