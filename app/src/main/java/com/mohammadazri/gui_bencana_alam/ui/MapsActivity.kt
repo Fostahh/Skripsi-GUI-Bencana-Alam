@@ -9,7 +9,6 @@ import android.location.Address
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
-import android.os.HandlerThread
 import android.os.Looper
 import android.util.Log
 import android.widget.Toast
@@ -30,7 +29,7 @@ import java.io.IOException
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
-    private lateinit var mMap: GoogleMap
+    private lateinit var map: GoogleMap
     private lateinit var binding: ActivityMapsBinding
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var lastLocation: Location
@@ -66,9 +65,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
-        mMap = googleMap
-        mMap.uiSettings.isZoomControlsEnabled = true
-        mMap.setOnMarkerClickListener(this)
+        map = googleMap
+        map.uiSettings.isZoomControlsEnabled = true
+        map.setOnMarkerClickListener(this)
         setupMap()
     }
 
@@ -83,27 +82,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
                 LOCATION_PERMISSION_REQUEST_CODE)
             return
         } else {
-            mMap.isMyLocationEnabled = true
+            map.isMyLocationEnabled = true
             fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                 location?.let {
                     lastLocation = it
                     val currentLatLng = LatLng(it.latitude, it.longitude)
                     placeMarkerOnMap(currentLatLng)
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+                    map.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
                 }
             }
         }
     }
 
     private fun placeMarkerOnMap(latLng: LatLng) {
-        for (i in 1..10) {
-
-        }
         val markerOptions = MarkerOptions().position(latLng)
 
         markerOptions.title(getAddress(latLng))
 
-        mMap.addMarker(markerOptions)
+        map.addMarker(markerOptions)
+        map.addMarker(MarkerOptions().position(LatLng(-6.167509329921617, 106.8986752883656)))
     }
 
     private fun getAddress(latLng: LatLng): String {
@@ -149,12 +146,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
 
     private fun createLocationRequest() {
         // 1
-        locationRequest = LocationRequest.create()
-        // 2
-        locationRequest.interval = 10000
-        // 3
-        locationRequest.fastestInterval = 5000
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        locationRequest = LocationRequest.create().apply {
+            this.interval = 10000
+            this.fastestInterval = 5000
+            this.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
 
         val builder = LocationSettingsRequest.Builder()
             .addLocationRequest(locationRequest)
@@ -168,6 +164,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback, GoogleMap.OnMarker
             locationUpdateState = true
             startLocationUpdates()
         }
+
         task.addOnFailureListener { e ->
             // 6
             if (e is ResolvableApiException) {
