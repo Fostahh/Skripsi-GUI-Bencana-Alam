@@ -1,7 +1,9 @@
-package com.mohammadazri.gui_bencana_alam.core.domain
+package com.mohammadazri.gui_bencana_alam.core.domain.repository
 
 import androidx.lifecycle.LiveData
 import com.google.android.gms.maps.model.LatLng
+import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
+import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 
 interface IRepository {
     fun savePermissionsStatus(status: Boolean)
@@ -9,4 +11,6 @@ interface IRepository {
     fun getCurrentLocation(): LiveData<LatLng?>
     fun stopLocationUpdates()
     fun resumeLocationUpdates()
+
+    fun getDisasters(): LiveData<DisastersDTO?>
 }

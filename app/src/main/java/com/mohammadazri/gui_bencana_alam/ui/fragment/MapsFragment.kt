@@ -25,6 +25,7 @@ import com.mohammadazri.gui_bencana_alam.R
 import com.mohammadazri.gui_bencana_alam.databinding.FragmentMapsBinding
 import com.mohammadazri.gui_bencana_alam.ui.fragment.viewmodel.SharedViewModel
 import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
+import com.mohammadazri.gui_bencana_alam.util.ext.toMapLatLng
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -60,7 +61,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             setOnMarkerClickListener(this@MapsFragment)
         }
         viewModel.getCurrentLocation().observe(viewLifecycleOwner) { latLng ->
-
             latLng?.let {
                 map.animateCamera(CameraUpdateFactory.newLatLngZoom(it, 15f))
                 Log.d("MapsFragmentTesting", "$latLng")
@@ -69,9 +69,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 turnOnGPSDialog()
             }
         }
+
+        viewModel.getDisasters().observe(viewLifecycleOwner) { disastersDTO ->
+            disastersDTO?.disasters?.let { disasters ->
+                disasters.forEach { it2 ->
+                    it2?.let { disaster ->
+                        Log.d("RemoteDataSourceF", "${disaster.latLng}")
+                        placeMarker(disaster.latLng!!.toMapLatLng())
+                    }
+                }
+            }
+        }
     }
 
     private fun placeMarker(latLng: LatLng) {
+        //Tipe Datanya Double
+        Log.d("RemoteDataSourceFr", "$latLng")
         val markerOptions = MarkerOptions().position(latLng)
         markerOptions.title(viewModel.getAddress(latLng, requireContext()))
         map.addMarker(markerOptions)

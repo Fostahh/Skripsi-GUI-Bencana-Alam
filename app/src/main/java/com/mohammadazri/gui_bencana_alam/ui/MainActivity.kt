@@ -25,9 +25,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == 100) {
             when (resultCode) {
-                Activity.RESULT_OK -> viewModel.getCurrentLocation()
+                Activity.RESULT_OK -> {
+                    viewModel.getCurrentLocation()
+                    viewModel.getDisasters()
+                }
                 Activity.RESULT_CANCELED -> Toast.makeText(this,
                     "GPS is required",
                     Toast.LENGTH_SHORT).show()

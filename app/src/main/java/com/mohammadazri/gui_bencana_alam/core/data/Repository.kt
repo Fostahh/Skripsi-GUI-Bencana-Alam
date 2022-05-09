@@ -11,7 +11,10 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import com.mohammadazri.gui_bencana_alam.core.data.source.local.LocalDataSource
-import com.mohammadazri.gui_bencana_alam.core.domain.IRepository
+import com.mohammadazri.gui_bencana_alam.core.data.source.remote.RemoteDataSource
+import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
+import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
+import com.mohammadazri.gui_bencana_alam.core.domain.repository.IRepository
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -19,6 +22,7 @@ import javax.inject.Singleton
 class Repository @Inject constructor(
     private val localDataSource: LocalDataSource,
     private val fusedLocationClient: FusedLocationProviderClient,
+    private val remoteDataSource: RemoteDataSource,
 ) : IRepository {
     private val latLng = MutableLiveData<LatLng?>()
 
@@ -87,4 +91,8 @@ class Repository @Inject constructor(
             Looper.getMainLooper())
         Log.d("MapsFragmentResume", "${latLng.value}")
     }
+
+    override fun getDisasters(): LiveData<DisastersDTO?> = remoteDataSource.getDisasters()
+
+
 }
