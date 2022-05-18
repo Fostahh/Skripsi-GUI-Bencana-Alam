@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.mohammadazri.gui_bencana_alam.R
 import com.mohammadazri.gui_bencana_alam.databinding.FragmentNeedPermissionsBinding
+import com.mohammadazri.gui_bencana_alam.util.Constant.PERMISSION_LOCATION_REQUEST_CODE
 import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
 import dagger.hilt.android.AndroidEntryPoint
 import pub.devrel.easypermissions.AppSettingsDialog
@@ -73,15 +74,6 @@ class NeedPermissionsFragment : Fragment(), EasyPermissions.PermissionCallbacks 
         grantResults: IntArray,
     ) {
         EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this)
-    }
 
-    override fun onResume() {
-        super.onResume()
-//        checkPermission()
     }
-
-    companion object {
-        const val PERMISSION_LOCATION_REQUEST_CODE = 1
-    }
-
 }

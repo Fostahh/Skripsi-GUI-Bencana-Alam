@@ -22,7 +22,7 @@ class RetrofitModule {
     @Provides
     fun provideApiService(client: OkHttpClient): ApiService {
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://10.0.2.2:8000/")
+            .baseUrl("https://skripsi-test-yfcoyhmlcq-as.a.run.app/")
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
