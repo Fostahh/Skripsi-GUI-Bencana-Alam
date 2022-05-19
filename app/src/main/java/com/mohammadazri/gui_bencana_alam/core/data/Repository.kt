@@ -5,6 +5,7 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.map
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -15,6 +16,9 @@ import com.mohammadazri.gui_bencana_alam.core.data.source.remote.RemoteDataSourc
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.domain.repository.IRepository
+import com.mohammadazri.gui_bencana_alam.core.util.DataMapper
+import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_FASTEST_INTERVAL
+import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_INTERVAL
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,19 +34,19 @@ class Repository @Inject constructor(
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
 
-            Log.d("MapsFragmentTestingory", "${latLng.value}")
             latLng.postValue(LatLng(
                 result.lastLocation.latitude,
                 result.lastLocation.longitude
             ))
-            fusedLocationClient.removeLocationUpdates(this)
+
+            Log.d("Repository", "${result.lastLocation}")
         }
     }
 
     private val locationRequest = LocationRequest.create().apply {
         priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        interval = 10000L
-        fastestInterval = 5000L
+        interval = FUSED_LOCATION_INTERVAL
+        fastestInterval = FUSED_LOCATION_FASTEST_INTERVAL
     }
 
     override fun savePermissionsStatus(status: Boolean) =
@@ -73,8 +77,6 @@ class Repository @Inject constructor(
             locationCallback,
             Looper.getMainLooper())
 
-        Log.d("MapsFragmentStart", "${latLng.value}")
-
         return latLng
     }
 
@@ -92,7 +94,12 @@ class Repository @Inject constructor(
         Log.d("MapsFragmentResume", "${latLng.value}")
     }
 
-    override fun getDisasters(): LiveData<DisastersDTO?> = remoteDataSource.getDisasters()
+    override fun getDisasters(): LiveData<List<Disaster>> {
+
+        return remoteDataSource.getDisasters().map {
+            DataMapper.DisastersResponseToDisasterDomain(it)
+        }
+    }
 
 
 }

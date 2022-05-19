@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,14 +22,12 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.mohammadazri.gui_bencana_alam.GeofenceHelper
 import com.mohammadazri.gui_bencana_alam.R
-import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisasterDTO
+import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.databinding.FragmentMapsBinding
 import com.mohammadazri.gui_bencana_alam.ui.fragment.viewmodel.SharedViewModel
-import com.mohammadazri.gui_bencana_alam.util.Constant
 import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE
 import com.mohammadazri.gui_bencana_alam.util.Constant.TURN_ON_GPS_REQUEST_CODE
 import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
-import com.mohammadazri.gui_bencana_alam.util.ext.toMapLatLng
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -79,39 +76,41 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             }
         }
 
-        viewModel.getDisasters().observe(viewLifecycleOwner) { disastersDTO ->
-            disastersDTO?.disasters?.let { disasters ->
-
-                addGeofence(disasters)
-                placeMarker(disasters)
-                addCircle(disasters)
-                disasters.forEach {
-                    it?.let { disasterDTO ->
-                        disasterDTO.latLng?.let { latLng ->
-//                            placeMarker(latLng.toMapLatLng())
-//                            addCircle(latLng.toMapLatLng())
-                        }
-                    }
+        viewModel.getDisasters().observe(viewLifecycleOwner) {
+            it?.let { listDisaster ->
+                addGeofence(listDisaster)
+                listDisaster.map { disaster ->
+                    placeMarker(disaster)
+                    addCircle(disaster)
                 }
             }
         }
     }
 
-    private fun placeMarker(latLng: List<DisasterDTO?>) {
+    @SuppressLint("MissingPermission")
+    private fun addGeofence(listDisaster: List<Disaster>) {
+        val geofencingRequest = geofenceHelper.getGeofencingRequest(listDisaster)
+        val pendingIntent = geofenceHelper.getPendingIntent()
+
+        geofencingClient.addGeofences(geofencingRequest, pendingIntent).run {
+            addOnSuccessListener {
+                Toast.makeText(requireContext(), "Geofences added", Toast.LENGTH_SHORT).show()
+            }
+            addOnFailureListener {
+                Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
+
+    private fun placeMarker(disaster: Disaster) {
         val markerOptions = MarkerOptions()
         markerOptions.apply {
-            latLng.forEach { a ->
-                a?.let { disasterDTO ->
-                    disasterDTO.latLng?.let {
-                        position(it.toMapLatLng())
-                        title(viewModel.getAddress(it.toMapLatLng(), requireContext()))
-                        map.addMarker(this)
-                    }
-                }
+            disaster.latLng?.let { latLng ->
+                position(latLng)
+                title(viewModel.getAddress(latLng, requireContext()))
             }
-//            position(latLng)
-//            title(viewModel.getAddress(latLng, requireContext()))
-//            map.addMarker(this)
+            map.addMarker(this)
         }
     }
 
@@ -140,57 +139,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         return true
     }
 
-    private fun addCircle(latLng: List<DisasterDTO?>) {
+    private fun addCircle(disaster: Disaster) {
         val circleOptions = CircleOptions()
         circleOptions.apply {
-            latLng.forEach { a ->
-                a?.let { disasterDTO ->
-                    disasterDTO.latLng?.let {
-                        center(it.toMapLatLng())
-                        radius(GEOFENCE_RADIUS_DOUBLE)
-                        strokeColor(Color.argb(255, 255, 0, 0))
-                        fillColor(Color.argb(64, 255, 0, 0))
-                        strokeWidth(4F)
-                        map.addCircle(circleOptions)
-                    }
-                }
-            }
-//            center(latLng)
-//            radius(GEOFENCE_RADIUS_DOUBLE)
-//            strokeColor(Color.argb(255, 255, 0, 0))
-//            fillColor(Color.argb(64, 255, 0, 0))
-//            strokeWidth(4F)
-//            map.addCircle(circleOptions)
-        }
-    }
 
-    @SuppressLint("MissingPermission")
-    private fun addGeofence(listDisasterDTO: List<DisasterDTO?>) {
-        val geofencingRequest = geofenceHelper.getGeofencingRequest(listDisasterDTO)
-        val pendingIntent = geofenceHelper.getPendingIntent()
-
-        geofencingClient.addGeofences(geofencingRequest, pendingIntent).run {
-            addOnSuccessListener {
-                Toast.makeText(requireContext(), "Geofences added", Toast.LENGTH_SHORT).show()
-            }
-            addOnFailureListener {
-                Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT)
-                    .show()
+            disaster.latLng?.let { latLng ->
+                center(latLng)
+                radius(GEOFENCE_RADIUS_DOUBLE)
+                strokeColor(Color.argb(255, 255, 0, 0))
+                fillColor(Color.argb(64, 255, 0, 0))
+                strokeWidth(4F)
+                map.addCircle(circleOptions)
             }
         }
     }
-
-//    private fun removeGeofence() {
-//        geofencingClient.removeGeofences(geofenceIntent).run {
-//            addOnSuccessListener {
-//                Toast.makeText(requireContext(), "Geofences removed", Toast.LENGTH_SHORT).show()
-//            }
-//            addOnFailureListener {
-//                Toast.makeText(requireContext(), "Failed to remove geofences", Toast.LENGTH_SHORT)
-//                    .show()
-//            }
-//        }
-//    }
 
     override fun onPause() {
         super.onPause()
@@ -208,6 +170,4 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         super.onDestroyView()
         _binding = null
     }
-
-
 }

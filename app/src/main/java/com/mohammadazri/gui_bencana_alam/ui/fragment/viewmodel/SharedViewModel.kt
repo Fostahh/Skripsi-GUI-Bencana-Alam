@@ -8,6 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
+import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.domain.usecase.UseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.IOException
@@ -44,5 +45,5 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
 
     fun stopLocationUpdates() = useCase.stopLocationUpdates()
 
-    fun getDisasters(): LiveData<DisastersDTO?> = useCase.getDisasters()
+    fun getDisasters(): LiveData<List<Disaster>> = useCase.getDisasters()
 }

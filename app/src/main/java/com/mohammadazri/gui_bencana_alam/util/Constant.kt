@@ -10,6 +10,9 @@ object Constant {
     const val GEOFENCE_REQUEST_CODE = 0
     const val GEOFENCE_DELAY = 5000
 
+    const val FUSED_LOCATION_INTERVAL = 90000L
+    const val FUSED_LOCATION_FASTEST_INTERVAL = 60000L
+
     const val TURN_ON_GPS_REQUEST_CODE = 100
     const val PERMISSION_LOCATION_REQUEST_CODE = 1
 
