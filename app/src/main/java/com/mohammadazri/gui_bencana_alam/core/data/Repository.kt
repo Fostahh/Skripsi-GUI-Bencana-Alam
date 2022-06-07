@@ -13,10 +13,11 @@ import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
 import com.mohammadazri.gui_bencana_alam.core.data.source.local.LocalDataSource
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.RemoteDataSource
-import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
+import com.mohammadazri.gui_bencana_alam.core.data.source.remote.util.ApiResponse
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.domain.repository.IRepository
 import com.mohammadazri.gui_bencana_alam.core.util.DataMapper
+import com.mohammadazri.gui_bencana_alam.core.util.Resource
 import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_FASTEST_INTERVAL
 import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_INTERVAL
 import javax.inject.Inject
@@ -34,10 +35,14 @@ class Repository @Inject constructor(
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
 
-            latLng.postValue(LatLng(
-                result.lastLocation.latitude,
-                result.lastLocation.longitude
-            ))
+            latLng.postValue(
+                LatLng(
+                    result.lastLocation.latitude,
+                    result.lastLocation.longitude
+                )
+            )
+
+            fusedLocationClient.removeLocationUpdates(this)
 
             Log.d("Repository", "${result.lastLocation}")
         }
@@ -60,10 +65,12 @@ class Repository @Inject constructor(
         fusedLocationClient.lastLocation.addOnCompleteListener { task ->
             if (task.isSuccessful) {
                 task.result?.let { result ->
-                    latLng.postValue(LatLng(
-                        result.latitude,
-                        result.longitude
-                    ))
+                    latLng.postValue(
+                        LatLng(
+                            result.latitude,
+                            result.longitude
+                        )
+                    )
                 } ?: run {
                     latLng.postValue(null)
                 }
@@ -75,7 +82,8 @@ class Repository @Inject constructor(
         fusedLocationClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
-            Looper.getMainLooper())
+            Looper.getMainLooper()
+        )
 
         return latLng
     }
@@ -90,16 +98,19 @@ class Repository @Inject constructor(
         fusedLocationClient.requestLocationUpdates(
             locationRequest,
             locationCallback,
-            Looper.getMainLooper())
+            Looper.getMainLooper()
+        )
         Log.d("MapsFragmentResume", "${latLng.value}")
     }
 
-    override fun getDisasters(): LiveData<List<Disaster>> {
+    override fun getDisasters(): LiveData<Resource<List<Disaster>>> =
+        remoteDataSource.getDisasters().map {
+            when(it) {
+                is ApiResponse.Success -> Resource.Success(DataMapper.disastersResponseToDisasterDomain(it.data))
+                is ApiResponse.Error -> Resource.Error(it.errorMessage)
+                is ApiResponse.Loading -> Resource.Loading()
+                else -> Resource.Error("Terjadi error")
+            }
 
-        return remoteDataSource.getDisasters().map {
-            DataMapper.DisastersResponseToDisasterDomain(it)
         }
-    }
-
-
 }

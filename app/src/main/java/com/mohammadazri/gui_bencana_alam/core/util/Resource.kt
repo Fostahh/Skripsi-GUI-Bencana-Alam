@@ -1,4 +1,4 @@
-package com.mohammadazri.gui_bencana_alam.util
+package com.mohammadazri.gui_bencana_alam.core.util
 
 sealed class Resource<T>(val data: T? = null, val message: String? = null) {
     class Success<T>(data: T) : Resource<T>(data)

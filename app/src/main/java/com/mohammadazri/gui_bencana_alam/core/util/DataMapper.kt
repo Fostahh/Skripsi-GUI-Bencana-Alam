@@ -7,19 +7,20 @@ import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 
 object DataMapper {
 
-    fun DisastersResponseToDisasterDomain(disastersDTO: DisastersDTO?): List<Disaster> {
+    fun disastersResponseToDisasterDomain(disastersDTO: DisastersDTO?): List<Disaster> {
         val listDisaster = ArrayList<Disaster>()
 
         disastersDTO?.disasters?.let { listDisasterDTO ->
             listDisasterDTO.map {
                 it?.let { disasterDTO ->
-
                     disasterDTO.latLng?.latitude?.let { latitude ->
                         disasterDTO.latLng.longitude?.let { longitude ->
-                            Disaster(
-                                disasterDTO.id,
-                                LatLng(latitude, longitude),
-                                disasterDTO.type
+                            listDisaster.add(
+                                Disaster(
+                                    disasterDTO.id,
+                                    LatLng(latitude, longitude),
+                                    disasterDTO.type
+                                )
                             )
                         }
                     }
@@ -29,5 +30,4 @@ object DataMapper {
 
         return listDisaster
     }
-
 }

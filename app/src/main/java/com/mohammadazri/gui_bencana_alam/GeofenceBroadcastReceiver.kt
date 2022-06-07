@@ -21,11 +21,10 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             return
         }
 
-        val geofenceList = geofencingEvent.triggeringGeofences
-
-        geofenceList.forEach {
-            Log.d("GeofenceBroadcast", "onReceive + ${it.requestId}")
-        }
+//        val geofenceList = geofencingEvent.triggeringGeofences
+//        geofenceList.forEach {
+//            Log.d("GeofenceBroadcast", "onReceive + ${it.requestId}")
+//        }
 
         when (geofencingEvent.geofenceTransition) {
             Geofence.GEOFENCE_TRANSITION_ENTER -> {
