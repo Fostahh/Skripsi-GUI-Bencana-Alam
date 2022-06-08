@@ -15,4 +15,5 @@ class Interactor @Inject constructor(private val repository: IRepository) : UseC
     override fun stopLocationUpdates() = repository.stopLocationUpdates()
     override fun resumeLocationUpdates() = repository.resumeLocationUpdates()
     override fun getDisasters(): LiveData<Resource<List<Disaster>>> = repository.getDisasters()
+    override fun getDisastersByFilter(filter: String?): LiveData<Resource<List<Disaster>>> = repository.getDisastersByFilter(filter)
 }

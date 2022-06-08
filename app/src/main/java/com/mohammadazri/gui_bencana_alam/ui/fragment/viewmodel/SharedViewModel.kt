@@ -60,28 +60,31 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
 
     fun getDisasters(): LiveData<Resource<List<Disaster>>> = useCase.getDisasters()
 
-    fun addDisasters(listDisaster: List<Disaster>) {
-//        tesDisasters.clear()
-        listDisaster.map {
-            tesDisasters.add(it)
-        }
-//        Log.d("TesViewModel", "Masuak $tesDisasters")
-        _tesListDisaster.postValue(tesDisasters)
-    }
+    fun getDisastersByFilter(filter: String? = "gempa"): LiveData<Resource<List<Disaster>>> =
+        useCase.getDisastersByFilter(filter)
 
-    fun filterDisastersGempa() {
-        tesDisasters.map {
-            if (it.type == "gempa") _tesListDisaster.postValue(listOf(it))
-        }
-    }
-
-    fun filterDisastersBanjir() {
-        tesDisasters.map {
-            if (it.type == "banjir") _tesListDisaster.postValue(listOf(it))
-        }
-    }
-
-    fun noFilterDisasters() =
-        _tesListDisaster.postValue(tesDisasters)
+//    fun addDisasters(listDisaster: List<Disaster>) {
+////        tesDisasters.clear()
+//        listDisaster.map {
+//            tesDisasters.add(it)
+//        }
+////        Log.d("TesViewModel", "Masuak $tesDisasters")
+//        _tesListDisaster.postValue(tesDisasters)
+//    }
+//
+//    fun filterDisastersGempa() {
+//        tesDisasters.map {
+//            if (it.type == "gempa") _tesListDisaster.postValue(listOf(it))
+//        }
+//    }
+//
+//    fun filterDisastersBanjir() {
+//        tesDisasters.map {
+//            if (it.type == "banjir") _tesListDisaster.postValue(listOf(it))
+//        }
+//    }
+//
+//    fun noFilterDisasters() =
+//        _tesListDisaster.postValue(tesDisasters)
 
 }

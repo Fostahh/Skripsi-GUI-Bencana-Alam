@@ -48,7 +48,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     private lateinit var geofencingClient: GeofencingClient
     private lateinit var geofenceHelper: GeofenceHelper
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -83,30 +87,48 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         }
 
         viewModel.getDisasters().observe(viewLifecycleOwner) {
-            when(it) {
+            when (it) {
                 is Resource.Success -> {
+                    Log.d("MapsFragmentGet", "${it.data}")
                     it.data?.let { listDisaster ->
-                        viewModel.addDisasters(listDisaster)
+                        map.clear()
+                        addGeofence(listDisaster)
+                        listDisaster.map { disaster ->
+                            placeMarker(disaster)
+                            addCircle(disaster)
+                        }
                     }
                 }
 
-                is Resource.Error -> {
-
-                }
+                is Resource.Error -> Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
 
                 is Resource.Loading -> {
 
                 }
             }
-
         }
 
-        viewModel.tesListDisaster.observe(viewLifecycleOwner) {
-            map.clear()
-            addGeofence(it)
-            it.map { disaster ->
-                placeMarker(disaster)
-                addCircle(disaster)
+        viewModel.getDisastersByFilter("gempa").observe(viewLifecycleOwner) {
+            when (it) {
+                is Resource.Success -> {
+                    Log.d("MapsFragmentFilter", "${it.data}")
+                    it.data?.let { listDisaster ->
+                        if(listDisaster.isNotEmpty()) {
+                            map.clear()
+                            addGeofence(listDisaster)
+                            listDisaster.map { disaster ->
+                                placeMarker(disaster)
+                                addCircle(disaster)
+                            }
+                        }
+                    }
+                }
+
+                is Resource.Error -> Toast.makeText(context, "Filter Error", Toast.LENGTH_SHORT).show()
+
+                is Resource.Loading -> {
+
+                }
             }
         }
     }

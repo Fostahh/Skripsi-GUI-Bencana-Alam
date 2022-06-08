@@ -32,9 +32,9 @@ class MainActivity : AppCompatActivity() {
 
         binding.navViewMaps.setNavigationItemSelectedListener { menu ->
             when (menu.itemId) {
-                R.id.filter_gempa -> viewModel.filterDisastersGempa()
-                R.id.filter_banjir -> viewModel.filterDisastersBanjir()
-                R.id.about_us -> viewModel.noFilterDisasters()
+                R.id.filter_gempa -> viewModel.getDisastersByFilter("gempa")
+                R.id.filter_banjir -> viewModel.getDisastersByFilter("banjir")
+                R.id.about_us -> viewModel.getDisasters()
             }
 
             binding.drawerLayoutMain.closeDrawers()

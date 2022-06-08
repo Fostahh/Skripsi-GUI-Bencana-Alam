@@ -13,4 +13,5 @@ interface UseCase {
     fun stopLocationUpdates()
     fun resumeLocationUpdates()
     fun getDisasters(): LiveData<Resource<List<Disaster>>>
+    fun getDisastersByFilter(filter: String?): LiveData<Resource<List<Disaster>>>
 }

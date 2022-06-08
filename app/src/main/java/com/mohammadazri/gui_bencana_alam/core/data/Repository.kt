@@ -105,12 +105,31 @@ class Repository @Inject constructor(
 
     override fun getDisasters(): LiveData<Resource<List<Disaster>>> =
         remoteDataSource.getDisasters().map {
-            when(it) {
-                is ApiResponse.Success -> Resource.Success(DataMapper.disastersResponseToDisasterDomain(it.data))
+            when (it) {
+                is ApiResponse.Success -> Resource.Success(
+                    DataMapper.disastersResponseToDisasterDomain(
+                        it.data
+                    )
+                )
                 is ApiResponse.Error -> Resource.Error(it.errorMessage)
                 is ApiResponse.Loading -> Resource.Loading()
                 else -> Resource.Error("Terjadi error")
             }
 
         }
+
+    override fun getDisastersByFilter(filter: String?): LiveData<Resource<List<Disaster>>> =
+        remoteDataSource.getDisastersByFilter(filter).map {
+            when (it) {
+                is ApiResponse.Empty -> Resource.Error("Terjadi error")
+                is ApiResponse.Error -> Resource.Error(it.errorMessage)
+                is ApiResponse.Loading -> Resource.Loading()
+                is ApiResponse.Success -> Resource.Success(
+                    DataMapper.disastersResponseToDisasterDomain(
+                        it.data
+                    )
+                )
+            }
+        }
+
 }
