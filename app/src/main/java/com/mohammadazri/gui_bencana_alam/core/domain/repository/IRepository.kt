@@ -6,6 +6,7 @@ import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.Disast
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.util.ApiResponse
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.util.Resource
+import kotlinx.coroutines.flow.Flow
 
 interface IRepository {
     fun savePermissionsStatus(status: Boolean)
@@ -13,6 +14,6 @@ interface IRepository {
     fun getCurrentLocation(): LiveData<LatLng?>
     fun stopLocationUpdates()
     fun resumeLocationUpdates()
-    fun getDisasters(): LiveData<Resource<List<Disaster>>>
-    fun getDisastersByFilter(filter: String?): LiveData<Resource<List<Disaster>>>
+    fun getDisasters(): Flow<Resource<List<Disaster>>>
+    fun getDisastersByFilter(filter: String): Flow<Resource<List<Disaster>>>
 }

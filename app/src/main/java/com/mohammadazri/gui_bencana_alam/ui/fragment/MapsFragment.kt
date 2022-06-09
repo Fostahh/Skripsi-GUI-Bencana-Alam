@@ -4,14 +4,12 @@ import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.GeofencingClient
@@ -89,7 +87,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         viewModel.getDisasters().observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
-                    Log.d("MapsFragmentGet", "${it.data}")
                     it.data?.let { listDisaster ->
                         map.clear()
                         addGeofence(listDisaster)
@@ -111,20 +108,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         viewModel.getDisastersByFilter("gempa").observe(viewLifecycleOwner) {
             when (it) {
                 is Resource.Success -> {
-                    Log.d("MapsFragmentFilter", "${it.data}")
                     it.data?.let { listDisaster ->
-                        if(listDisaster.isNotEmpty()) {
-                            map.clear()
-                            addGeofence(listDisaster)
-                            listDisaster.map { disaster ->
-                                placeMarker(disaster)
-                                addCircle(disaster)
-                            }
+                        map.clear()
+                        addGeofence(listDisaster)
+                        listDisaster.map { disaster ->
+                            placeMarker(disaster)
+                            addCircle(disaster)
                         }
                     }
                 }
 
-                is Resource.Error -> Toast.makeText(context, "Filter Error", Toast.LENGTH_SHORT).show()
+                is Resource.Error -> Toast.makeText(context, "Filter Error", Toast.LENGTH_SHORT)
+                    .show()
 
                 is Resource.Loading -> {
 

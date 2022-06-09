@@ -1,80 +1,55 @@
 package com.mohammadazri.gui_bencana_alam.core.data.source.remote
 
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisasterDTO
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
-import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersResponse
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.retrofit.ApiService
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.util.ApiResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) : IRemoteDataSource {
-    override fun getDisasters(): LiveData<ApiResponse<DisastersDTO?>> {
-        val result = MutableLiveData<ApiResponse<DisastersDTO?>>()
-
-        apiService.getDisasters().enqueue(object : Callback<DisastersResponse> {
-            override fun onResponse(
-                call: Call<DisastersResponse>,
-                response: Response<DisastersResponse>
-            ) {
-                if(response.isSuccessful) {
-                    val data = response.body()
-                    data?.disastersDTO?.let {
-                        result.postValue(ApiResponse.Success(it))
-                    } ?: run {
-                        result.postValue(ApiResponse.Error("Bencana alam tidak ditemukan"))
-                    }
-                } else {
-                    result.postValue(ApiResponse.Error("Terjadi kesalahan!"))
+    override suspend fun getDisasters(): Flow<ApiResponse<DisastersDTO>> {
+        return flow {
+            Log.d("ViewModel", "RemoteDataSource")
+            val response = apiService.getDisasters()
+            if (response.isSuccessful) {
+                val disasters = response.body()?.disastersDTO
+                disasters?.let {
+                    emit(ApiResponse.Success(it))
+                    Log.d("RemoteDataSource", "$it")
+                } ?: run {
+                    emit(ApiResponse.Error("Tidak ada bencana alam"))
+                    Log.d("RemoteDataSource", "Tidak ada bencana alam")
                 }
+            } else {
+                emit(ApiResponse.Error("Terjadi kesalahan"))
             }
-
-            override fun onFailure(call: Call<DisastersResponse>, t: Throwable) {
-                result.postValue(ApiResponse.Error(t.localizedMessage!!))
-                Log.d("RemoteDataSource", t.localizedMessage!!)
-            }
-
-        })
-
-
-        return result
+        }.flowOn(Dispatchers.IO)
     }
 
-    override fun getDisastersByFilter(filter: String?): LiveData<ApiResponse<DisastersDTO?>> {
-        val result = MutableLiveData<ApiResponse<DisastersDTO?>>()
+    override suspend fun getDisastersByFilter(filter: String): Flow<ApiResponse<DisastersDTO?>> =
+        flow<ApiResponse<DisastersDTO?>> {
+            Log.d("ViewModelFilter", "RemoteDataSource")
+            val response = apiService.getDisastersByFilter(filter)
+            val disasters = response.disastersDTO
+            try {
+                disasters?.let {
+                    emit(ApiResponse.Success(it))
+                    Log.d("RemoteDataSource", "$it")
+                } ?: run {
+                    emit(ApiResponse.Error("Tidak ada bencana alam"))
 
-        apiService.getDisastersByFilter(filter).enqueue(object : Callback<DisastersResponse> {
-            override fun onResponse(
-                call: Call<DisastersResponse>,
-                response: Response<DisastersResponse>
-            ) {
-                if(response.isSuccessful) {
-                    val data = response.body()
-                    data?.disastersDTO?.let {
-                        result.postValue(ApiResponse.Success(it))
-                        Log.d("RemoteDataSource", "$it")
-                    } ?: run {
-                        result.postValue(ApiResponse.Error("Bencana alam tidak ditemukan"))
-                    }
-                } else {
-                    result.postValue(ApiResponse.Error("Terjadi kesalahan!"))
+                    Log.d("RemoteDataSource", "Tidak ada bencana alam")
                 }
+            } catch (e: Exception) {
+                emit(ApiResponse.Error(e.toString()))
+
+                Log.e("RemoteDataSource", e.toString())
             }
-
-            override fun onFailure(call: Call<DisastersResponse>, t: Throwable) {
-                result.postValue(ApiResponse.Error(t.localizedMessage!!))
-                Log.d("RemoteDataSource", t.localizedMessage!!)
-            }
-
-        })
-
-        return result
-    }
+        }.flowOn(Dispatchers.IO)
 }

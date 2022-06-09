@@ -5,7 +5,6 @@ import android.os.Looper
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.map
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -20,6 +19,9 @@ import com.mohammadazri.gui_bencana_alam.core.util.DataMapper
 import com.mohammadazri.gui_bencana_alam.core.util.Resource
 import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_FASTEST_INTERVAL
 import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_INTERVAL
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -29,6 +31,7 @@ class Repository @Inject constructor(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val remoteDataSource: RemoteDataSource,
 ) : IRepository {
+
     private val latLng = MutableLiveData<LatLng?>()
 
     private val locationCallback = object : LocationCallback() {
@@ -43,8 +46,6 @@ class Repository @Inject constructor(
             )
 
             fusedLocationClient.removeLocationUpdates(this)
-
-            Log.d("Repository", "${result.lastLocation}")
         }
     }
 
@@ -90,7 +91,6 @@ class Repository @Inject constructor(
 
     override fun stopLocationUpdates() {
         fusedLocationClient.removeLocationUpdates(locationCallback)
-        Log.d("MapsFragmentPause", "${latLng.value}")
     }
 
     @SuppressLint("MissingPermission")
@@ -100,36 +100,43 @@ class Repository @Inject constructor(
             locationCallback,
             Looper.getMainLooper()
         )
-        Log.d("MapsFragmentResume", "${latLng.value}")
     }
 
-    override fun getDisasters(): LiveData<Resource<List<Disaster>>> =
-        remoteDataSource.getDisasters().map {
+    override fun getDisasters(): Flow<Resource<List<Disaster>>> = flow {
+        remoteDataSource.getDisasters().collect {
+            Log.d("ViewModel", "Repository")
             when (it) {
-                is ApiResponse.Success -> Resource.Success(
-                    DataMapper.disastersResponseToDisasterDomain(
-                        it.data
+                is ApiResponse.Success -> emit(
+                    Resource.Success(
+                        DataMapper.disastersResponseToDisasterDomain(
+                            it.data
+                        )
                     )
                 )
-                is ApiResponse.Error -> Resource.Error(it.errorMessage)
-                is ApiResponse.Loading -> Resource.Loading()
-                else -> Resource.Error("Terjadi error")
+                is ApiResponse.Error -> emit(Resource.Error(it.errorMessage))
+                is ApiResponse.Loading -> emit(Resource.Loading())
+                else -> emit(Resource.Error("Terjadi error"))
             }
-
         }
+    }
 
-    override fun getDisastersByFilter(filter: String?): LiveData<Resource<List<Disaster>>> =
-        remoteDataSource.getDisastersByFilter(filter).map {
+
+    override fun getDisastersByFilter(filter: String): Flow<Resource<List<Disaster>>> = flow {
+        remoteDataSource.getDisastersByFilter(filter).collect {
+            Log.d("ViewModelFilter", "Repository")
             when (it) {
-                is ApiResponse.Empty -> Resource.Error("Terjadi error")
-                is ApiResponse.Error -> Resource.Error(it.errorMessage)
-                is ApiResponse.Loading -> Resource.Loading()
-                is ApiResponse.Success -> Resource.Success(
-                    DataMapper.disastersResponseToDisasterDomain(
-                        it.data
+                is ApiResponse.Success -> emit(
+                    Resource.Success(
+                        DataMapper.disastersResponseToDisasterDomain(
+                            it.data
+                        )
                     )
                 )
+                is ApiResponse.Error -> emit(Resource.Error(it.errorMessage))
+                is ApiResponse.Loading -> emit(Resource.Loading())
+                else -> emit(Resource.Error("Terjadi error"))
             }
         }
+    }
 
 }

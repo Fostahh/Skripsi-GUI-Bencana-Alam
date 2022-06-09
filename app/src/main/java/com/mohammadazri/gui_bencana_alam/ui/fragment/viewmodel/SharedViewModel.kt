@@ -4,10 +4,7 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.map
+import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
@@ -15,6 +12,8 @@ import com.mohammadazri.gui_bencana_alam.core.domain.usecase.UseCase
 import com.mohammadazri.gui_bencana_alam.core.util.DataMapper
 import com.mohammadazri.gui_bencana_alam.core.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 import java.io.IOException
 import javax.inject.Inject
 
@@ -58,10 +57,24 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
     private var _tesListDisaster = MutableLiveData<List<Disaster>>()
     val tesListDisaster: LiveData<List<Disaster>> = _tesListDisaster
 
-    fun getDisasters(): LiveData<Resource<List<Disaster>>> = useCase.getDisasters()
+//    fun getDisasters(): LiveData<Resource<List<Disaster>>> {
+//        Log.d("ViewModel", "Tess")
+//        return useCase.getDisasters().asLiveData()
+//    }
 
-    fun getDisastersByFilter(filter: String? = "gempa"): LiveData<Resource<List<Disaster>>> =
-        useCase.getDisastersByFilter(filter)
+    fun getDisasters(): LiveData<Resource<List<Disaster>>> {
+        Log.d("ViewModel", "ViewModel")
+        return useCase.getDisasters().asLiveData()
+    }
+
+    fun getDisastersByFilter(filter: String): LiveData<Resource<List<Disaster>>> {
+        Log.d("ViewModelFilter", "ViewModel")
+        return useCase.getDisastersByFilter(filter).asLiveData()}
+
+//    fun getDisasters(): LiveData<Resource<List<Disaster>>> = useCase.getDisasters()
+//
+//    fun getDisastersByFilter(filter: String? = "gempa"): LiveData<Resource<List<Disaster>>> =
+//        useCase.getDisastersByFilter(filter)
 
 //    fun addDisasters(listDisaster: List<Disaster>) {
 ////        tesDisasters.clear()
