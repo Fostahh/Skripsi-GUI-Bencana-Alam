@@ -10,5 +10,5 @@ interface ApiService {
     suspend fun getDisasters(): Response<DisastersResponse>
 
     @GET("/disasters/filter/{filter}")
-    suspend fun getDisastersByFilter(@Path("filter") filter: String?): DisastersResponse
+    suspend fun getDisastersByFilter(@Path("filter") filter: String?): Response<DisastersResponse>
 }

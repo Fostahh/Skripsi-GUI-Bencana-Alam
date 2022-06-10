@@ -15,11 +15,11 @@ class Interactor @Inject constructor(private val repository: IRepository) : UseC
     override fun getCurrentLocation(): LiveData<LatLng?> = repository.getCurrentLocation()
     override fun stopLocationUpdates() = repository.stopLocationUpdates()
     override fun resumeLocationUpdates() = repository.resumeLocationUpdates()
-    override fun getDisasters(): Flow<Resource<List<Disaster>>> {
+    override suspend fun getDisasters(): Resource<List<Disaster>> {
         Log.d("ViewModel", "Interactor")
         return repository.getDisasters()
     }
-    override fun getDisastersByFilter(filter: String): Flow<Resource<List<Disaster>>> {
+    override suspend fun getDisastersByFilter(filter: String): Resource<List<Disaster>> {
         Log.d("ViewModelFilter", "Interactor")
         return repository.getDisastersByFilter(filter)
     }

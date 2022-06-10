@@ -33,6 +33,8 @@ import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE
 import com.mohammadazri.gui_bencana_alam.util.Constant.TURN_ON_GPS_REQUEST_CODE
 import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
@@ -52,6 +54,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
+        observeLiveData()
         return binding.root
     }
 
@@ -84,46 +87,25 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             }
         }
 
-        viewModel.getDisasters().observe(viewLifecycleOwner) {
-            when (it) {
-                is Resource.Success -> {
-                    it.data?.let { listDisaster ->
-                        map.clear()
-                        addGeofence(listDisaster)
-                        listDisaster.map { disaster ->
-                            placeMarker(disaster)
-                            addCircle(disaster)
-                        }
-                    }
-                }
+        viewModel.getDisasters()
+    }
 
-                is Resource.Error -> Toast.makeText(context, "Error", Toast.LENGTH_SHORT).show()
-
-                is Resource.Loading -> {
-
-                }
+    private fun observeLiveData() {
+        viewModel.disasterLiveData.observe(viewLifecycleOwner) {
+            map.clear()
+            addGeofence(it)
+            it.map { disaster ->
+                placeMarker(disaster)
+                addCircle(disaster)
             }
         }
 
-        viewModel.getDisastersByFilter("gempa").observe(viewLifecycleOwner) {
-            when (it) {
-                is Resource.Success -> {
-                    it.data?.let { listDisaster ->
-                        map.clear()
-                        addGeofence(listDisaster)
-                        listDisaster.map { disaster ->
-                            placeMarker(disaster)
-                            addCircle(disaster)
-                        }
-                    }
-                }
-
-                is Resource.Error -> Toast.makeText(context, "Filter Error", Toast.LENGTH_SHORT)
-                    .show()
-
-                is Resource.Loading -> {
-
-                }
+        viewModel.filteredLiveData.observe(viewLifecycleOwner) {
+            map.clear()
+            addGeofence(it)
+            it.map { disaster ->
+                placeMarker(disaster)
+                addCircle(disaster)
             }
         }
     }

@@ -8,48 +8,48 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
+import okhttp3.Dispatcher
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class RemoteDataSource @Inject constructor(private val apiService: ApiService) : IRemoteDataSource {
-    override suspend fun getDisasters(): Flow<ApiResponse<DisastersDTO>> {
-        return flow {
-            Log.d("ViewModel", "RemoteDataSource")
-            val response = apiService.getDisasters()
-            if (response.isSuccessful) {
+    override suspend fun getDisasters(): ApiResponse<DisastersDTO> {
+        val response = apiService.getDisasters()
+        return when {
+            response.isSuccessful -> {
                 val disasters = response.body()?.disastersDTO
                 disasters?.let {
-                    emit(ApiResponse.Success(it))
                     Log.d("RemoteDataSource", "$it")
+                    ApiResponse.Success(it)
                 } ?: run {
-                    emit(ApiResponse.Error("Tidak ada bencana alam"))
                     Log.d("RemoteDataSource", "Tidak ada bencana alam")
+                    ApiResponse.Error("Tidak ada bencana alam")
                 }
-            } else {
-                emit(ApiResponse.Error("Terjadi kesalahan"))
             }
-        }.flowOn(Dispatchers.IO)
+            else -> {
+                ApiResponse.Error("Terjadi kesalahan")
+            }
+        }
     }
 
-    override suspend fun getDisastersByFilter(filter: String): Flow<ApiResponse<DisastersDTO?>> =
-        flow<ApiResponse<DisastersDTO?>> {
-            Log.d("ViewModelFilter", "RemoteDataSource")
-            val response = apiService.getDisastersByFilter(filter)
-            val disasters = response.disastersDTO
-            try {
-                disasters?.let {
-                    emit(ApiResponse.Success(it))
-                    Log.d("RemoteDataSource", "$it")
-                } ?: run {
-                    emit(ApiResponse.Error("Tidak ada bencana alam"))
-
-                    Log.d("RemoteDataSource", "Tidak ada bencana alam")
-                }
-            } catch (e: Exception) {
-                emit(ApiResponse.Error(e.toString()))
-
-                Log.e("RemoteDataSource", e.toString())
+    override suspend fun getDisastersByFilter(filter: String): ApiResponse<DisastersDTO?> {
+        val response = apiService.getDisastersByFilter(filter)
+        val disasters = response.body()?.disastersDTO
+        return try {
+            disasters?.let {
+                Log.d("RemoteDataSource", "$it")
+                ApiResponse.Success(it)
+            } ?: run {
+                Log.d("RemoteDataSource", "Tidak ada bencana alam")
+                ApiResponse.Error("Tidak ada bencana alam")
             }
-        }.flowOn(Dispatchers.IO)
+        } catch (e: Exception) {
+
+            Log.e("RemoteDataSource", e.toString())
+            ApiResponse.Error(e.toString())
+        }
+    }
 }

@@ -14,6 +14,6 @@ interface IRepository {
     fun getCurrentLocation(): LiveData<LatLng?>
     fun stopLocationUpdates()
     fun resumeLocationUpdates()
-    fun getDisasters(): Flow<Resource<List<Disaster>>>
-    fun getDisastersByFilter(filter: String): Flow<Resource<List<Disaster>>>
+    suspend fun getDisasters(): Resource<List<Disaster>>
+    suspend fun getDisastersByFilter(filter: String): Resource<List<Disaster>>
 }

@@ -6,22 +6,27 @@ import android.location.Geocoder
 import android.util.Log
 import androidx.lifecycle.*
 import com.google.android.gms.maps.model.LatLng
-import com.mohammadazri.gui_bencana_alam.core.data.source.remote.response.DisastersDTO
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.domain.usecase.UseCase
-import com.mohammadazri.gui_bencana_alam.core.util.DataMapper
 import com.mohammadazri.gui_bencana_alam.core.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
-class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewModel() {
+class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewModel(),
+    CoroutineScope {
     //    fun savePermissionsStatus(status: Boolean) = useCase.savePermissionsStatus(status)
 //    fun loadPermissionStatus(): Boolean = useCase.loadPermissionStatus()
 //    fun getLocationBasedOnGPS(): LiveData<>
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
+
     fun getCurrentLocation(): LiveData<LatLng?> = useCase.getCurrentLocation()
     fun getAddress(latLng: LatLng, context: Context): String {
         val geocoder = Geocoder(context)
@@ -53,51 +58,43 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
         INI TESTING FILTER FEATURE
     */
 
-    private var tesDisasters = ArrayList<Disaster>()
-    private var _tesListDisaster = MutableLiveData<List<Disaster>>()
-    val tesListDisaster: LiveData<List<Disaster>> = _tesListDisaster
+    var disasterLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
+    var filteredLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
 
-//    fun getDisasters(): LiveData<Resource<List<Disaster>>> {
-//        Log.d("ViewModel", "Tess")
-//        return useCase.getDisasters().asLiveData()
-//    }
+    fun getDisasters() {
+        launch {
+            val disasters = withContext(Dispatchers.IO) {
+                useCase.getDisasters()
+            }
+            when (disasters) {
+                is Resource.Error -> TODO()
+                is Resource.Loading -> TODO()
+                is Resource.Success -> {
+                    disasters.data?.let {
+                        disasterLiveData.value = it
+                    }
 
-    fun getDisasters(): LiveData<Resource<List<Disaster>>> {
-        Log.d("ViewModel", "ViewModel")
-        return useCase.getDisasters().asLiveData()
+                }
+            }
+        }
     }
 
-    fun getDisastersByFilter(filter: String): LiveData<Resource<List<Disaster>>> {
-        Log.d("ViewModelFilter", "ViewModel")
-        return useCase.getDisastersByFilter(filter).asLiveData()}
+    fun getDisastersByFilter(filter: String) {
+        launch {
+            val disasters = withContext(Dispatchers.IO) {
+                useCase.getDisastersByFilter(filter)
+            }
+            when (disasters) {
+                is Resource.Error -> TODO()
+                is Resource.Loading -> TODO()
+                is Resource.Success -> {
+                    disasters.data?.let {
+                        filteredLiveData.value = it
+                    }
 
-//    fun getDisasters(): LiveData<Resource<List<Disaster>>> = useCase.getDisasters()
-//
-//    fun getDisastersByFilter(filter: String? = "gempa"): LiveData<Resource<List<Disaster>>> =
-//        useCase.getDisastersByFilter(filter)
-
-//    fun addDisasters(listDisaster: List<Disaster>) {
-////        tesDisasters.clear()
-//        listDisaster.map {
-//            tesDisasters.add(it)
-//        }
-////        Log.d("TesViewModel", "Masuak $tesDisasters")
-//        _tesListDisaster.postValue(tesDisasters)
-//    }
-//
-//    fun filterDisastersGempa() {
-//        tesDisasters.map {
-//            if (it.type == "gempa") _tesListDisaster.postValue(listOf(it))
-//        }
-//    }
-//
-//    fun filterDisastersBanjir() {
-//        tesDisasters.map {
-//            if (it.type == "banjir") _tesListDisaster.postValue(listOf(it))
-//        }
-//    }
-//
-//    fun noFilterDisasters() =
-//        _tesListDisaster.postValue(tesDisasters)
+                }
+            }
+        }
+    }
 
 }

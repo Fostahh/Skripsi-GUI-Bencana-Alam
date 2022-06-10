@@ -7,6 +7,6 @@ import com.mohammadazri.gui_bencana_alam.core.data.source.remote.util.ApiRespons
 import kotlinx.coroutines.flow.Flow
 
 interface IRemoteDataSource {
-    suspend fun getDisasters(): Flow<ApiResponse<DisastersDTO?>>
-    suspend fun getDisastersByFilter(filter: String): Flow<ApiResponse<DisastersDTO?>>
+    suspend fun getDisasters(): ApiResponse<DisastersDTO?>
+    suspend fun getDisastersByFilter(filter: String): ApiResponse<DisastersDTO?>
 }

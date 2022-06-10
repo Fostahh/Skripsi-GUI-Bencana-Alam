@@ -102,41 +102,36 @@ class Repository @Inject constructor(
         )
     }
 
-    override fun getDisasters(): Flow<Resource<List<Disaster>>> = flow {
-        remoteDataSource.getDisasters().collect {
-            Log.d("ViewModel", "Repository")
-            when (it) {
-                is ApiResponse.Success -> emit(
-                    Resource.Success(
-                        DataMapper.disastersResponseToDisasterDomain(
-                            it.data
-                        )
+    override suspend fun getDisasters(): Resource<List<Disaster>> {
+        val disasters = remoteDataSource.getDisasters()
+        return when (disasters) {
+            is ApiResponse.Empty -> Resource.Error("Terjadi error")
+            is ApiResponse.Error -> Resource.Error(disasters.errorMessage)
+            ApiResponse.Loading -> Resource.Loading()
+            is ApiResponse.Success -> {
+                Resource.Success(
+                    DataMapper.disastersResponseToDisasterDomain(
+                        disasters.data
                     )
                 )
-                is ApiResponse.Error -> emit(Resource.Error(it.errorMessage))
-                is ApiResponse.Loading -> emit(Resource.Loading())
-                else -> emit(Resource.Error("Terjadi error"))
             }
         }
     }
 
 
-    override fun getDisastersByFilter(filter: String): Flow<Resource<List<Disaster>>> = flow {
-        remoteDataSource.getDisastersByFilter(filter).collect {
-            Log.d("ViewModelFilter", "Repository")
-            when (it) {
-                is ApiResponse.Success -> emit(
-                    Resource.Success(
-                        DataMapper.disastersResponseToDisasterDomain(
-                            it.data
-                        )
+    override suspend fun getDisastersByFilter(filter: String): Resource<List<Disaster>> {
+        val disasters = remoteDataSource.getDisastersByFilter(filter)
+        return when(disasters) {
+            is ApiResponse.Empty -> Resource.Error("Terjadi error")
+            is ApiResponse.Error -> Resource.Error("Terjadi error")
+            ApiResponse.Loading -> Resource.Loading()
+            is ApiResponse.Success -> {
+                Resource.Success(
+                    DataMapper.disastersResponseToDisasterDomain(
+                        disasters.data
                     )
                 )
-                is ApiResponse.Error -> emit(Resource.Error(it.errorMessage))
-                is ApiResponse.Loading -> emit(Resource.Loading())
-                else -> emit(Resource.Error("Terjadi error"))
             }
         }
     }
-
 }
