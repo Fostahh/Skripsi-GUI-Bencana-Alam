@@ -53,11 +53,6 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
     fun stopLocationUpdates() = useCase.stopLocationUpdates()
     fun resumeLocationUpdates() = useCase.resumeLocationUpdates()
 
-
-    /*
-        INI TESTING FILTER FEATURE
-    */
-
     var disasterLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
     var filteredLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
 
@@ -96,5 +91,4 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
             }
         }
     }
-
 }

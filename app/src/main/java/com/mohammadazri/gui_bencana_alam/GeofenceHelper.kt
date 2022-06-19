@@ -22,15 +22,20 @@ class GeofenceHelper(val context: Context) {
 
         listDisaster.map { disaster ->
             disaster.id?.let { id ->
-                disaster.latLng?.let {latLng ->
-                    listGeofence.add(Geofence.Builder()
-                        .setRequestId(id.toString())
-                        .setCircularRegion(latLng.latitude, latLng.longitude, GEOFENCE_RADIUS_FLOAT)
-                        .setExpirationDuration(Geofence.NEVER_EXPIRE)
-                        .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
-                        .setLoiteringDelay(GEOFENCE_DELAY)
-                        .setNotificationResponsiveness(1000)
-                        .build()
+                disaster.latLng?.let { latLng ->
+                    listGeofence.add(
+                        Geofence.Builder()
+                            .setRequestId(id.toString())
+                            .setCircularRegion(
+                                latLng.latitude,
+                                latLng.longitude,
+                                GEOFENCE_RADIUS_FLOAT
+                            )
+                            .setExpirationDuration(Geofence.NEVER_EXPIRE)
+                            .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)
+                            .setLoiteringDelay(GEOFENCE_DELAY)
+                            .setNotificationResponsiveness(1000)
+                            .build()
                     )
                 }
             }
@@ -48,10 +53,12 @@ class GeofenceHelper(val context: Context) {
         } ?: run {
             val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
             pendingIntent =
-                PendingIntent.getBroadcast(context,
+                PendingIntent.getBroadcast(
+                    context,
                     GEOFENCE_REQUEST_CODE,
                     intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT)
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
             return pendingIntent as PendingIntent
         }
     }

@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">GUI-Bencana-Alam</string>
+    <string name="app_description">NDLocation merupakan aplikasi yang bertujuan untuk membantu Pengguna dalam memantau apakah lokasi mereka saat ini dalam radius bencana alam. Terdapat 2 jenis bencana alam yang dapat dipantau menggunakan aplikasi ini, yaitu Banjir dan Gempa Bumi. Dengan fitur deteksi lokasi pada aplikasi, pengguna dapat menerima sebuah notifikasi apabila pengguna berada di dalam radius bencana alam.</string>
     <string name="title_activity_maps">MapsActivity</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
     <string name="open">Open</string>
     <string name="close">Close</string>
+    <string name="need_permission_description">Silahkan aktifkan lokasi Anda untuk\nmemilih lokasi pasar</string>
+    <string name="izinkan">Izinkan</string>
+    <string name="logo_need_permission">Logo Need Permission</string>
+    <string name="menu_peta">Peta</string>
+    <string name="menu_about_us">About Us</string>
+    <string name="menu_jenis_bencana">Jenis Bencana</string>
+    <string name="menu_gempa">Gempa</string>
+    <string name="menu_banjir">Banjir</string>
 </resources>

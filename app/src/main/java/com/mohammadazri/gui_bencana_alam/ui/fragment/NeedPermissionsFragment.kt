@@ -35,14 +35,13 @@ class NeedPermissionsFragment : Fragment(), EasyPermissions.PermissionCallbacks 
         activity?.let {
             checkPermission()
 
-            binding.swipeRefresh.setOnRefreshListener {
+            binding.buttonIzinkan.setOnClickListener {
                 checkPermission()
             }
         }
     }
 
     private fun checkPermission() {
-        binding.swipeRefresh.isRefreshing = false
         if (PermissionUtility.isPermissionsGranted(requireContext())) {
             findNavController().navigate(R.id.action_needPermissionsFragment_to_mapsFragment)
         } else {
@@ -53,6 +52,11 @@ class NeedPermissionsFragment : Fragment(), EasyPermissions.PermissionCallbacks 
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.ACCESS_COARSE_LOCATION
             )
+            with(binding) {
+                imageViewNeedPermission.visibility = View.VISIBLE
+                textViewNeedPermissionDesc.visibility = View.VISIBLE
+                buttonIzinkan.visibility = View.VISIBLE
+            }
         }
     }
 

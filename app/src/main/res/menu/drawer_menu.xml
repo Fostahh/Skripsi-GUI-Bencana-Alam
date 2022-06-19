@@ -5,14 +5,29 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/filter_gempa"
-            android:title="Gempa" />
-        <item
-            android:id="@+id/filter_banjir"
-            android:title="Banjir" />
+            android:id="@+id/peta"
+            android:icon="@drawable/map"
+            android:title="@string/menu_peta" />
+
         <item
             android:id="@+id/about_us"
-            android:title="About Us" />
+            android:icon="@drawable/ic_baseline_info_24"
+            android:title="@string/menu_about_us" />
+
+        <item android:title="@string/menu_jenis_bencana">
+            <menu>
+                <group android:checkableBehavior="single">
+                    <item
+                        android:id="@+id/filter_gempa"
+                        android:icon="@drawable/earthquake"
+                        android:title="@string/menu_gempa" />
+                    <item
+                        android:id="@+id/filter_banjir"
+                        android:icon="@drawable/flood"
+                        android:title="@string/menu_banjir" />
+                </group>
+            </menu>
+        </item>
     </group>
 
 </menu>

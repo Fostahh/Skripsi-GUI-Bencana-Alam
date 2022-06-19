@@ -26,15 +26,12 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.mohammadazri.gui_bencana_alam.GeofenceHelper
 import com.mohammadazri.gui_bencana_alam.R
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
-import com.mohammadazri.gui_bencana_alam.core.util.Resource
 import com.mohammadazri.gui_bencana_alam.databinding.FragmentMapsBinding
 import com.mohammadazri.gui_bencana_alam.ui.fragment.viewmodel.SharedViewModel
 import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE
 import com.mohammadazri.gui_bencana_alam.util.Constant.TURN_ON_GPS_REQUEST_CODE
 import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
@@ -51,10 +48,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View {
         _binding = FragmentMapsBinding.inflate(inflater, container, false)
-        observeLiveData()
         return binding.root
     }
 
@@ -78,6 +74,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             setOnCameraIdleListener(this@MapsFragment)
             setOnMarkerClickListener(this@MapsFragment)
         }
+
+        observeLiveData()
 
         viewModel.getCurrentLocation().observe(viewLifecycleOwner) {
             it?.let { latLng ->
@@ -113,11 +111,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     @SuppressLint("MissingPermission")
     private fun addGeofence(listDisaster: List<Disaster>) {
         val geofencingRequest = geofenceHelper.getGeofencingRequest(listDisaster)
-        val pendingIntent = geofenceHelper.getPendingIntent()
+        val pendingIntent by lazy { geofenceHelper.getPendingIntent() }
 
         geofencingClient.addGeofences(geofencingRequest, pendingIntent).run {
             addOnFailureListener {
-                Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Mohon beri izin setiap saat", Toast.LENGTH_SHORT)
                     .show()
             }
         }
@@ -169,9 +167,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     override fun onMarkerClick(marker: Marker): Boolean {
         val action =
-            MapsFragmentDirections.actionMapsFragmentToDetailDisasterDialogFragment(
-                marker.title
-            )
+            MapsFragmentDirections.actionMapsFragmentToDetailDisasterDialogFragment(marker.title)
         findNavController().navigate(action)
         return true
     }
