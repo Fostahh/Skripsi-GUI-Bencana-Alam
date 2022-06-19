@@ -10,6 +10,7 @@
     <color name="gray">#A1A1A1</color>
 
     <color name="metalic_seaweed">#FF00838F</color>
+    <color name="metalic_seaweed_700">#00616A</color>
     <color name="bright_navy_blue">#1D75DA</color>
     <color name="bg">#F8FCFD</color>
 </resources>

@@ -7,4 +7,9 @@
     <string name="need_permission_description">Silahkan aktifkan lokasi Anda untuk\nmemilih lokasi pasar</string>
     <string name="izinkan">Izinkan</string>
     <string name="logo_need_permission">Logo Need Permission</string>
+    <string name="menu_peta">Peta</string>
+    <string name="menu_about_us">About Us</string>
+    <string name="menu_jenis_bencana">Jenis Bencana</string>
+    <string name="menu_gempa">Gempa</string>
+    <string name="menu_banjir">Banjir</string>
 </resources>

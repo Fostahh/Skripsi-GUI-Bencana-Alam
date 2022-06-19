@@ -111,11 +111,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     @SuppressLint("MissingPermission")
     private fun addGeofence(listDisaster: List<Disaster>) {
         val geofencingRequest = geofenceHelper.getGeofencingRequest(listDisaster)
-        val pendingIntent = geofenceHelper.getPendingIntent()
+        val pendingIntent by lazy { geofenceHelper.getPendingIntent() }
 
         geofencingClient.addGeofences(geofencingRequest, pendingIntent).run {
             addOnFailureListener {
-                Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT)
+                Toast.makeText(requireContext(), "Mohon beri izin setiap saat", Toast.LENGTH_SHORT)
                     .show()
             }
         }

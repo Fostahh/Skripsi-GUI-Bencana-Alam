@@ -13,7 +13,6 @@
         android:layout_height="wrap_content"
         android:contentDescription="@string/logo_need_permission"
         android:src="@drawable/need_permission"
-        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/buttonIzinkan"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +26,6 @@
         android:gravity="center"
         android:text="@string/need_permission_description"
         android:textColor="@color/black"
-        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="@+id/imageViewNeedPermission"
         app:layout_constraintStart_toStartOf="@+id/imageViewNeedPermission"
         app:layout_constraintTop_toBottomOf="@+id/imageViewNeedPermission" />
@@ -42,7 +40,7 @@
         android:background="@drawable/rounded_sea_weed_button"
         android:text="@string/izinkan"
         android:textAllCaps="false"
-        android:visibility="gone"
+        android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />

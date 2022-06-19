@@ -2,7 +2,6 @@ package com.mohammadazri.gui_bencana_alam.core.data
 
 import android.annotation.SuppressLint
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -19,9 +18,6 @@ import com.mohammadazri.gui_bencana_alam.core.util.DataMapper
 import com.mohammadazri.gui_bencana_alam.core.util.Resource
 import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_FASTEST_INTERVAL
 import com.mohammadazri.gui_bencana_alam.util.Constant.FUSED_LOCATION_INTERVAL
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 import javax.inject.Singleton
 
