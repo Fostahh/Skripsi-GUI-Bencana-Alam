@@ -33,7 +33,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             }
             Geofence.GEOFENCE_TRANSITION_DWELL -> {
 //                Toast.makeText(context, "Dwell", Toast.LENGTH_SHORT).show()
-                notificationUtil.sendGeofenceEnteredNotification("Dwell")
+                notificationUtil.sendGeofenceEnteredNotification("Anda memasuki daerah bencana alam")
             }
             Geofence.GEOFENCE_TRANSITION_EXIT -> {
 //                Toast.makeText(context, "Exit", Toast.LENGTH_SHORT).show()

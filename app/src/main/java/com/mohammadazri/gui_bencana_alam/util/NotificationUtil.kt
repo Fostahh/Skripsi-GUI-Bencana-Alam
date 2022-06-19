@@ -52,7 +52,7 @@ class NotificationUtil(val context: Context) {
 
         //Building the notification
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-            .setContentTitle(context.getString(R.string.app_name))
+            .setContentTitle("Hati hati!")
             .setContentText(title)
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

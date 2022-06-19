@@ -5,13 +5,20 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/peta"
+            android:icon="@drawable/map"
+            android:title="Peta" />
+        <item
             android:id="@+id/filter_gempa"
+            android:icon="@drawable/earthquake"
             android:title="Gempa" />
         <item
             android:id="@+id/filter_banjir"
+            android:icon="@drawable/flood"
             android:title="Banjir" />
         <item
             android:id="@+id/about_us"
+            android:icon="@drawable/ic_baseline_info_24"
             android:title="About Us" />
     </group>
 
