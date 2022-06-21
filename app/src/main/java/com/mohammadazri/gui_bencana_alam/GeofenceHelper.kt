@@ -41,6 +41,8 @@ class GeofenceHelper(val context: Context) {
             }
         }
 
+        Log.d("GeofenceHelper", "${listGeofence})")
+
         return GeofencingRequest.Builder()
             .setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER)
             .addGeofences(listGeofence)
@@ -57,7 +59,7 @@ class GeofenceHelper(val context: Context) {
                     context,
                     GEOFENCE_REQUEST_CODE,
                     intent,
-                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE
                 )
             return pendingIntent as PendingIntent
         }

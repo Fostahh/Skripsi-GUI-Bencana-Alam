@@ -54,7 +54,7 @@ class NotificationUtil(val context: Context) {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setContentTitle("Hati hati!")
             .setContentText(title)
-            .setSmallIcon(R.drawable.ic_launcher_background)
+            .setSmallIcon(R.drawable.logo_app)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(contentPendingIntent)
             .build()

@@ -4,7 +4,10 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.util.Log
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.android.gms.maps.model.LatLng
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.domain.usecase.UseCase
@@ -19,15 +22,19 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
-class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewModel(),
-    CoroutineScope {
+class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewModel() {
     //    fun savePermissionsStatus(status: Boolean) = useCase.savePermissionsStatus(status)
 //    fun loadPermissionStatus(): Boolean = useCase.loadPermissionStatus()
 //    fun getLocationBasedOnGPS(): LiveData<>
-    override val coroutineContext: CoroutineContext
-        get() = Dispatchers.Main
 
     fun getCurrentLocation(): LiveData<LatLng?> = useCase.getCurrentLocation()
+    fun stopLocationUpdates() = useCase.stopLocationUpdates()
+    fun resumeLocationUpdates() = useCase.resumeLocationUpdates()
+
+    var disasterLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
+    var filteredLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
+    var toastErrorLiveData: MutableLiveData<String?> = MutableLiveData()
+
     fun getAddress(latLng: LatLng, context: Context): String {
         val geocoder = Geocoder(context)
         val address: Address?
@@ -50,19 +57,13 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
         return addressText
     }
 
-    fun stopLocationUpdates() = useCase.stopLocationUpdates()
-    fun resumeLocationUpdates() = useCase.resumeLocationUpdates()
-
-    var disasterLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
-    var filteredLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
-
     fun getDisasters() {
-        launch {
+        viewModelScope.launch {
             val disasters = withContext(Dispatchers.IO) {
                 useCase.getDisasters()
             }
             when (disasters) {
-                is Resource.Error -> TODO()
+                is Resource.Error -> toastErrorLiveData.value = disasters.message
                 is Resource.Loading -> TODO()
                 is Resource.Success -> {
                     disasters.data?.let {
@@ -75,7 +76,7 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
     }
 
     fun getDisastersByFilter(filter: String) {
-        launch {
+        viewModelScope.launch {
             val disasters = withContext(Dispatchers.IO) {
                 useCase.getDisastersByFilter(filter)
             }

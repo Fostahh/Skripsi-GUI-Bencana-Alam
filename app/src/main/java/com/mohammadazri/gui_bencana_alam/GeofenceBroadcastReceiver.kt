@@ -21,24 +21,8 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
             return
         }
 
-//        val geofenceList = geofencingEvent.triggeringGeofences
-//        geofenceList.forEach {
-//            Log.d("GeofenceBroadcast", "onReceive + ${it.requestId}")
-//        }
-
-        when (geofencingEvent.geofenceTransition) {
-            Geofence.GEOFENCE_TRANSITION_ENTER -> {
-//                Toast.makeText(context, "Enter", Toast.LENGTH_SHORT).show()
-//                notificationUtil.sendGeofenceEnteredNotification("Enter")
-            }
-            Geofence.GEOFENCE_TRANSITION_DWELL -> {
-//                Toast.makeText(context, "Dwell", Toast.LENGTH_SHORT).show()
-                notificationUtil.sendGeofenceEnteredNotification("Anda memasuki daerah bencana alam")
-            }
-            Geofence.GEOFENCE_TRANSITION_EXIT -> {
-//                Toast.makeText(context, "Exit", Toast.LENGTH_SHORT).show()
-//                notificationUtil.sendGeofenceEnteredNotification("Exit")
-            }
+        if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
+            notificationUtil.sendGeofenceEnteredNotification("Anda memasuki daerah bencana alam")
         }
     }
 }

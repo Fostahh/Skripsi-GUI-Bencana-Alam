@@ -1,6 +1,7 @@
 package com.mohammadazri.gui_bencana_alam.ui.fragment
 
 import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -45,13 +46,25 @@ class NeedPermissionsFragment : Fragment(), EasyPermissions.PermissionCallbacks 
         if (PermissionUtility.isPermissionsGranted(requireContext())) {
             findNavController().navigate(R.id.action_needPermissionsFragment_to_mapsFragment)
         } else {
-            EasyPermissions.requestPermissions(
-                this,
-                "This app cannot work without Location Permission",
-                PERMISSION_LOCATION_REQUEST_CODE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                EasyPermissions.requestPermissions(
+                    this,
+                    "This app cannot work without Location Permission",
+                    PERMISSION_LOCATION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION,
+                    Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                )
+            } else {
+                EasyPermissions.requestPermissions(
+                    this,
+                    "This app cannot work without Location Permission",
+                    PERMISSION_LOCATION_REQUEST_CODE,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            }
+
             with(binding) {
                 imageViewNeedPermission.visibility = View.VISIBLE
                 textViewNeedPermissionDesc.visibility = View.VISIBLE

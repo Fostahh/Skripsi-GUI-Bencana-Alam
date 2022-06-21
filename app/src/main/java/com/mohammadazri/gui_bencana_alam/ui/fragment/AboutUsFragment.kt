@@ -27,6 +27,9 @@ class AboutUsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         activity?.let {
+            binding.backMenu.setOnClickListener {
+                findNavController().navigateUp()
+            }
         }
     }
 

@@ -9,14 +9,16 @@
 
     <ImageView
         android:id="@+id/imageViewNeedPermission"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
         android:contentDescription="@string/logo_need_permission"
         android:src="@drawable/need_permission"
         app:layout_constraintBottom_toTopOf="@+id/buttonIzinkan"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.409" />
 
     <TextView
         android:id="@+id/textViewNeedPermissionDesc"

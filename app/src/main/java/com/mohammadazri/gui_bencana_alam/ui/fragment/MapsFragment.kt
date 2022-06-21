@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,8 +35,7 @@ import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener,
-    GoogleMap.OnCameraMoveListener, GoogleMap.OnCameraIdleListener {
+class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private var _binding: FragmentMapsBinding? = null
     private val binding get() = _binding!!
@@ -70,8 +70,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         map.apply {
             uiSettings.isZoomControlsEnabled = true
             isMyLocationEnabled = true
-            setOnCameraMoveListener(this@MapsFragment)
-            setOnCameraIdleListener(this@MapsFragment)
             setOnMarkerClickListener(this@MapsFragment)
         }
 
@@ -106,6 +104,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
                 addCircle(disaster)
             }
         }
+
+        viewModel.toastErrorLiveData.observe(viewLifecycleOwner) {
+            it?.let { errorMessage ->
+                Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+            }
+
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -123,10 +128,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     private fun placeMarker(disaster: Disaster) {
         val markerOptions = MarkerOptions()
+
         markerOptions.apply {
             disaster.latLng?.let { latLng ->
                 position(latLng)
-                title(viewModel.getAddress(latLng, requireContext()))
             }
             map.addMarker(this)
         }
@@ -170,14 +175,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             MapsFragmentDirections.actionMapsFragmentToDetailDisasterDialogFragment(marker.title)
         findNavController().navigate(action)
         return true
-    }
-
-    override fun onCameraMove() {
-
-    }
-
-    override fun onCameraIdle() {
-
     }
 
     override fun onPause() {
