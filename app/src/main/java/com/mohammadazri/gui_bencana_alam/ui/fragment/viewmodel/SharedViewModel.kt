@@ -13,20 +13,14 @@ import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.domain.usecase.UseCase
 import com.mohammadazri.gui_bencana_alam.core.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewModel() {
-    //    fun savePermissionsStatus(status: Boolean) = useCase.savePermissionsStatus(status)
-//    fun loadPermissionStatus(): Boolean = useCase.loadPermissionStatus()
-//    fun getLocationBasedOnGPS(): LiveData<>
-
     fun getCurrentLocation(): LiveData<LatLng?> = useCase.getCurrentLocation()
     fun stopLocationUpdates() = useCase.stopLocationUpdates()
     fun resumeLocationUpdates() = useCase.resumeLocationUpdates()
@@ -67,9 +61,8 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
                 is Resource.Loading -> TODO()
                 is Resource.Success -> {
                     disasters.data?.let {
-                        disasterLiveData.value = it
+                        disasterLiveData.postValue(it)
                     }
-
                 }
             }
         }
@@ -81,11 +74,11 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
                 useCase.getDisastersByFilter(filter)
             }
             when (disasters) {
-                is Resource.Error -> TODO()
+                is Resource.Error -> toastErrorLiveData.value = disasters.message
                 is Resource.Loading -> TODO()
                 is Resource.Success -> {
                     disasters.data?.let {
-                        filteredLiveData.value = it
+                        filteredLiveData.postValue(it)
                     }
 
                 }

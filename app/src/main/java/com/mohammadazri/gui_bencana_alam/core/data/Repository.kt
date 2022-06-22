@@ -101,9 +101,8 @@ class Repository @Inject constructor(
     override suspend fun getDisasters(): Resource<List<Disaster>> {
         val disasters = remoteDataSource.getDisasters()
         return when (disasters) {
-            is ApiResponse.Empty -> Resource.Error("Terjadi error")
             is ApiResponse.Error -> Resource.Error(disasters.errorMessage)
-            ApiResponse.Loading -> Resource.Loading()
+            is ApiResponse.Loading -> Resource.Loading()
             is ApiResponse.Success -> {
                 Resource.Success(
                     DataMapper.disastersResponseToDisasterDomain(
@@ -117,10 +116,9 @@ class Repository @Inject constructor(
 
     override suspend fun getDisastersByFilter(filter: String): Resource<List<Disaster>> {
         val disasters = remoteDataSource.getDisastersByFilter(filter)
-        return when(disasters) {
-            is ApiResponse.Empty -> Resource.Error("Terjadi error")
-            is ApiResponse.Error -> Resource.Error("Terjadi error")
-            ApiResponse.Loading -> Resource.Loading()
+        return when (disasters) {
+            is ApiResponse.Error -> Resource.Error(disasters.errorMessage)
+            is ApiResponse.Loading -> Resource.Loading()
             is ApiResponse.Success -> {
                 Resource.Success(
                     DataMapper.disastersResponseToDisasterDomain(

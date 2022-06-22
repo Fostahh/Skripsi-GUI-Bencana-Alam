@@ -4,34 +4,44 @@ import com.google.gson.annotations.SerializedName
 
 data class DisastersResponse(
     @field:SerializedName("data")
-    val disastersDTO: DisastersDTO? = null,
+    val data: List<DisastersItem>? = null,
 
     @field:SerializedName("status")
-    val status: String? = null
+    val status: String? = null,
+
+    @field:SerializedName("message")
+    val message: String? = null,
 )
 
-data class DisastersDTO(
-    @field:SerializedName("disasters")
-    val disasters: List<DisasterDTO?>? = null
-)
+data class DisastersItem(
+    @field:SerializedName("filter")
+    val filter: String,
 
-data class DisasterDTO(
+    @field:SerializedName("username")
+    val username: String,
+
+    @field:SerializedName("created_at")
+    val createdAt: String,
+
+    @field:SerializedName("mag")
+    val mag: String? = null,
 
     @field:SerializedName("id")
-    val id: Int? = null,
+    val id: String,
 
-    @field:SerializedName("Latlng")
-    val latLng: LatLng? = null,
+    @field:SerializedName("text")
+    val text: String,
 
-    @field:SerializedName("type")
-    val type: String? = null
-)
+    @field:SerializedName("predicted")
+    val predicted: String,
 
-data class LatLng(
-    @field:SerializedName("_latitude")
-    val latitude: Double? = null,
+    @field:SerializedName("location")
+    val location: String? = null,
 
-    @field:SerializedName("_longitude")
-    val longitude: Double? = null
+    @field:SerializedName("lon")
+    val lon: String? = null,
+
+    @field:SerializedName("lat")
+    val lat: String? = null,
 )
 

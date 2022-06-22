@@ -116,9 +116,13 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     @SuppressLint("MissingPermission")
     private fun addGeofence(listDisaster: List<Disaster>) {
         val geofencingRequest = geofenceHelper.getGeofencingRequest(listDisaster)
-        val pendingIntent by lazy { geofenceHelper.getPendingIntent() }
+        val pendingIntent by lazy {  geofenceHelper.getPendingIntent() }
 
         geofencingClient.addGeofences(geofencingRequest, pendingIntent).run {
+//            addOnSuccessListener {
+//                Toast.makeText(requireContext(), "Geofence berhasil", Toast.LENGTH_SHORT)
+//                    .show()
+//            }
             addOnFailureListener {
                 Toast.makeText(requireContext(), "Mohon beri izin setiap saat", Toast.LENGTH_SHORT)
                     .show()
@@ -128,7 +132,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
 
     private fun placeMarker(disaster: Disaster) {
         val markerOptions = MarkerOptions()
-
         markerOptions.apply {
             disaster.latLng?.let { latLng ->
                 position(latLng)
@@ -171,9 +174,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        val action =
-            MapsFragmentDirections.actionMapsFragmentToDetailDisasterDialogFragment(marker.title)
-        findNavController().navigate(action)
+        findNavController().navigate(R.id.action_mapsFragment_to_detailDisasterDialogFragment)
         return true
     }
 

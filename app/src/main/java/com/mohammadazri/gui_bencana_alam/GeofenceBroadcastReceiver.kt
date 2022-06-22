@@ -15,13 +15,15 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         val geofencingEvent = GeofencingEvent.fromIntent(intent)
         val notificationUtil = NotificationUtil(context)
 
+        Toast.makeText(context, "Triggered", Toast.LENGTH_SHORT).show()
+
         if (geofencingEvent.hasError()) {
             val errorMessage = GeofenceStatusCodes.getStatusCodeString(geofencingEvent.errorCode)
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
             return
         }
 
-        if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
+        if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL || geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER ) {
             notificationUtil.sendGeofenceEnteredNotification("Anda memasuki daerah bencana alam")
         }
     }
