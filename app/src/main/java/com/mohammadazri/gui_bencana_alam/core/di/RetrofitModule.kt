@@ -1,5 +1,6 @@
 package com.mohammadazri.gui_bencana_alam.core.di
 
+import com.mohammadazri.gui_bencana_alam.BuildConfig
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.retrofit.ApiService
 import dagger.Module
 import dagger.Provides
@@ -22,7 +23,7 @@ class RetrofitModule {
     @Provides
     fun provideApiService(client: OkHttpClient): ApiService {
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://skripsi-test-yfcoyhmlcq-as.a.run.app/")
+            .baseUrl(BuildConfig.BaseURL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
