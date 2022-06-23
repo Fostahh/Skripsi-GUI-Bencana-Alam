@@ -2,6 +2,7 @@ package com.mohammadazri.gui_bencana_alam.core.data
 
 import android.annotation.SuppressLint
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -125,6 +126,26 @@ class Repository @Inject constructor(
                         disasters.data
                     )
                 )
+            }
+        }
+    }
+
+    override suspend fun getDisasterById(id: String): Resource<Disaster> {
+        val disaster = remoteDataSource.getDisasterById(id)
+        return when(disaster) {
+            is ApiResponse.Error -> Resource.Error(disaster.errorMessage)
+            is ApiResponse.Loading -> Resource.Loading()
+            is ApiResponse.Success -> {
+                val disasterDTO = disaster.data
+                disasterDTO?.let {
+                    Log.d("Data", "$it")
+                    Resource.Success(
+                        DataMapper.disasterResponseToDisasterDomain(it)
+                    )
+                } ?: run {
+                    Resource.Error("Bencana Alam tidak ditemukan")
+                }
+
             }
         }
     }

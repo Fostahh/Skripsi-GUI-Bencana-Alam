@@ -16,7 +16,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,30 +24,57 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
     fun stopLocationUpdates() = useCase.stopLocationUpdates()
     fun resumeLocationUpdates() = useCase.resumeLocationUpdates()
 
-    var disasterLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
+    var listDisasterLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
     var filteredLiveData: MutableLiveData<List<Disaster>> = MutableLiveData()
+    var disasterLiveData: MutableLiveData<Disaster> = MutableLiveData()
     var toastErrorLiveData: MutableLiveData<String?> = MutableLiveData()
+
+//    fun getAddress(latLng: LatLng, context: Context): String {
+//        val geocoder = Geocoder(context)
+//        val address: Address?
+//        var addressText = ""
+//
+//        try {
+//            val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
+//            if (!addresses.isNullOrEmpty()) {
+//                address = addresses[0]
+//                for (i in 0..address.maxAddressLineIndex) {
+//                    addressText += if (i == 0) address.getAddressLine(i) else "\n" + address.getAddressLine(
+//                        i
+//                    )
+//                }
+//            }
+//        } catch (e: IOException) {
+//            Log.e("MapsFragmentTesting", e.localizedMessage ?: "Error")
+//        }
+//
+//        return addressText
+//    }
 
     fun getAddress(latLng: LatLng, context: Context): String {
         val geocoder = Geocoder(context)
         val address: Address?
-        var addressText = ""
+        var fulladdress = ""
+        val addresses: List<Address>? =
+            geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
 
-        try {
-            val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-            if (!addresses.isNullOrEmpty()) {
+        addresses?.let {
+            if (addresses.isNotEmpty()) {
                 address = addresses[0]
+                Log.d("Alamat Lokasi", "${address}")
                 for (i in 0..address.maxAddressLineIndex) {
-                    addressText += if (i == 0) address.getAddressLine(i) else "\n" + address.getAddressLine(
+                    fulladdress += if (i == 0) address.getAddressLine(i) else "\n" + address.getAddressLine(
                         i
                     )
                 }
+                fulladdress =
+                    address.getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex
+            } else {
+                fulladdress = "Location not found"
             }
-        } catch (e: IOException) {
-            Log.e("MapsFragmentTesting", e.localizedMessage ?: "Error")
         }
 
-        return addressText
+        return fulladdress
     }
 
     fun getDisasters() {
@@ -61,7 +87,7 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
                 is Resource.Loading -> TODO()
                 is Resource.Success -> {
                     disasters.data?.let {
-                        disasterLiveData.postValue(it)
+                        listDisasterLiveData.postValue(it)
                     }
                 }
             }
@@ -81,6 +107,23 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
                         filteredLiveData.postValue(it)
                     }
 
+                }
+            }
+        }
+    }
+
+    fun getDisasterById(id: String) {
+        viewModelScope.launch {
+            val disaster = withContext(Dispatchers.IO) {
+                useCase.getDisasterById(id)
+            }
+            when (disaster) {
+                is Resource.Error -> toastErrorLiveData.value = disaster.message
+                is Resource.Loading -> TODO()
+                is Resource.Success -> {
+                    disaster.data?.let {
+                        disasterLiveData.postValue(it)
+                    }
                 }
             }
         }
