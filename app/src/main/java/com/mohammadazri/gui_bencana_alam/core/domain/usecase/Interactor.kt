@@ -16,4 +16,5 @@ class Interactor @Inject constructor(private val repository: IRepository) : UseC
     override suspend fun getDisasters(): Resource<List<Disaster>> = repository.getDisasters()
     override suspend fun getDisastersByFilter(filter: String): Resource<List<Disaster>> =
         repository.getDisastersByFilter(filter)
+    override suspend fun getDisasterById(id: String): Resource<Disaster> = repository.getDisasterById(id)
 }

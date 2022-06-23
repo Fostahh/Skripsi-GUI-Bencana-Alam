@@ -13,4 +13,5 @@ interface UseCase {
     fun resumeLocationUpdates()
     suspend fun getDisasters(): Resource<List<Disaster>>
     suspend fun getDisastersByFilter(filter: String): Resource<List<Disaster>>
+    suspend fun getDisasterById(id: String): Resource<Disaster>
 }

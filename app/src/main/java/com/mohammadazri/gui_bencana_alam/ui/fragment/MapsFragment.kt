@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.IntentSender
 import android.graphics.Color
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,7 +86,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     private fun observeLiveData() {
-        viewModel.disasterLiveData.observe(viewLifecycleOwner) {
+        viewModel.listDisasterLiveData.observe(viewLifecycleOwner) {
             map.clear()
             addGeofence(it)
             it.map { disaster ->
@@ -116,7 +115,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     @SuppressLint("MissingPermission")
     private fun addGeofence(listDisaster: List<Disaster>) {
         val geofencingRequest = geofenceHelper.getGeofencingRequest(listDisaster)
-        val pendingIntent by lazy {  geofenceHelper.getPendingIntent() }
+        val pendingIntent by lazy { geofenceHelper.getPendingIntent() }
 
         geofencingClient.addGeofences(geofencingRequest, pendingIntent).run {
 //            addOnSuccessListener {
@@ -136,6 +135,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             disaster.latLng?.let { latLng ->
                 position(latLng)
             }
+            title(disaster.id)
             map.addMarker(this)
         }
     }
@@ -174,7 +174,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
     }
 
     override fun onMarkerClick(marker: Marker): Boolean {
-        findNavController().navigate(R.id.action_mapsFragment_to_detailDisasterDialogFragment)
+        val action =
+            MapsFragmentDirections.actionMapsFragmentToDetailDisasterDialogFragment(marker.title)
+        findNavController().navigate(action)
         return true
     }
 
