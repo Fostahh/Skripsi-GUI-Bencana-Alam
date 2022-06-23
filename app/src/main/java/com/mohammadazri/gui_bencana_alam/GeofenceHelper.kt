@@ -7,7 +7,12 @@ import android.util.Log
 import com.google.android.gms.location.Geofence
 import com.google.android.gms.location.GeofencingRequest
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
+import com.mohammadazri.gui_bencana_alam.util.Constant
 import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_DELAY
+import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE_GREAT
+import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE_MAJOR
+import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE_MINOR
+import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE_MODERATE
 import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_FLOAT
 import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_REQUEST_CODE
 
@@ -16,16 +21,25 @@ class GeofenceHelper(val context: Context) {
 
     fun getGeofencingRequest(listDisaster: List<Disaster>): GeofencingRequest {
         val listGeofence = ArrayList<Geofence>()
-
+        var geofenceRadiusFloat = GEOFENCE_RADIUS_FLOAT
         listDisaster.map { disaster ->
             disaster.latLng?.let { latLng ->
+                disaster.mag?.let { mag ->
+                    geofenceRadiusFloat = when {
+                        mag.toDouble() in 2.0..3.9 -> GEOFENCE_RADIUS_DOUBLE_MINOR
+                        mag.toDouble() in 4.0..5.9 -> GEOFENCE_RADIUS_DOUBLE_MODERATE
+                        mag.toDouble() in 6.0..7.9 -> GEOFENCE_RADIUS_DOUBLE_MAJOR
+                        mag.toDouble() >= 8 -> GEOFENCE_RADIUS_DOUBLE_GREAT
+                        else -> GEOFENCE_RADIUS_FLOAT
+                    }
+                }
                 listGeofence.add(
                     Geofence.Builder()
                         .setRequestId(disaster.id)
                         .setCircularRegion(
                             latLng.latitude,
                             latLng.longitude,
-                            GEOFENCE_RADIUS_FLOAT
+                            geofenceRadiusFloat
                         )
                         .setExpirationDuration(Geofence.NEVER_EXPIRE)
                         .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_DWELL)

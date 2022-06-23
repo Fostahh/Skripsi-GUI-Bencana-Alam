@@ -29,28 +29,6 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
     var disasterLiveData: MutableLiveData<Disaster> = MutableLiveData()
     var toastErrorLiveData: MutableLiveData<String?> = MutableLiveData()
 
-//    fun getAddress(latLng: LatLng, context: Context): String {
-//        val geocoder = Geocoder(context)
-//        val address: Address?
-//        var addressText = ""
-//
-//        try {
-//            val addresses = geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-//            if (!addresses.isNullOrEmpty()) {
-//                address = addresses[0]
-//                for (i in 0..address.maxAddressLineIndex) {
-//                    addressText += if (i == 0) address.getAddressLine(i) else "\n" + address.getAddressLine(
-//                        i
-//                    )
-//                }
-//            }
-//        } catch (e: IOException) {
-//            Log.e("MapsFragmentTesting", e.localizedMessage ?: "Error")
-//        }
-//
-//        return addressText
-//    }
-
     fun getAddress(latLng: LatLng, context: Context): String {
         val geocoder = Geocoder(context)
         val address: Address?
@@ -85,12 +63,14 @@ class SharedViewModel @Inject constructor(private val useCase: UseCase) : ViewMo
             when (disasters) {
                 is Resource.Error -> toastErrorLiveData.value = disasters.message
                 is Resource.Loading -> TODO()
-                is Resource.Success -> {
-                    disasters.data?.let {
-                        listDisasterLiveData.postValue(it)
-                    }
-                }
+                is Resource.Success -> fetchDisaster(disasters.data)
             }
+        }
+    }
+
+    fun fetchDisaster(disasters: List<Disaster>?) {
+        disasters?.let {
+            listDisasterLiveData.postValue(it)
         }
     }
 

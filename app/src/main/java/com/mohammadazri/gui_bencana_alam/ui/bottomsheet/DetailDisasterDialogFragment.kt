@@ -43,6 +43,7 @@ class DetailDisasterDialogFragment : BottomSheetDialogFragment() {
                 viewModel.getDisasterById(id)
                 viewModel.disasterLiveData.observe(viewLifecycleOwner) {
                     it?.let { disaster ->
+                        Log.d("DetailDisaster", "$disaster")
                         with(binding) {
                             textViewDisasterCategory.text =
                                 disaster.filter.replaceFirstChar { firstChar ->

@@ -22,7 +22,7 @@ class GeofenceBroadcastReceiver : BroadcastReceiver() {
         }
 
         if (geofencingEvent.geofenceTransition == Geofence.GEOFENCE_TRANSITION_DWELL) {
-            notificationUtil.sendGeofenceEnteredNotification("Anda memasuki daerah bencana alam")
+            notificationUtil.sendGeofenceEnteredNotification("Anda berada di dalam radius bencana alam")
         }
     }
 }

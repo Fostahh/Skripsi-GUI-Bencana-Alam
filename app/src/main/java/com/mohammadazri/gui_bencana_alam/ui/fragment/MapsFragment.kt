@@ -28,7 +28,11 @@ import com.mohammadazri.gui_bencana_alam.R
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.databinding.FragmentMapsBinding
 import com.mohammadazri.gui_bencana_alam.ui.fragment.viewmodel.SharedViewModel
-import com.mohammadazri.gui_bencana_alam.util.Constant.GEOFENCE_RADIUS_DOUBLE
+import com.mohammadazri.gui_bencana_alam.util.Constant.CIRCLE_RADIUS_DOUBLE
+import com.mohammadazri.gui_bencana_alam.util.Constant.CIRCLE_RADIUS_DOUBLE_GREAT
+import com.mohammadazri.gui_bencana_alam.util.Constant.CIRCLE_RADIUS_DOUBLE_MAJOR
+import com.mohammadazri.gui_bencana_alam.util.Constant.CIRCLE_RADIUS_DOUBLE_MINOR
+import com.mohammadazri.gui_bencana_alam.util.Constant.CIRCLE_RADIUS_DOUBLE_MODERATE
 import com.mohammadazri.gui_bencana_alam.util.Constant.TURN_ON_GPS_REQUEST_CODE
 import com.mohammadazri.gui_bencana_alam.util.PermissionUtility
 import dagger.hilt.android.AndroidEntryPoint
@@ -164,12 +168,27 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
         circleOptions.apply {
             disaster.latLng?.let { latLng ->
                 center(latLng)
-                radius(GEOFENCE_RADIUS_DOUBLE)
-                strokeColor(Color.argb(255, 255, 0, 0))
-                fillColor(Color.argb(64, 255, 0, 0))
-                strokeWidth(4F)
-                map.addCircle(circleOptions)
             }
+            disaster.mag?.let { mag ->
+                when {
+                    mag.toDouble() in 2.0..3.9 ->
+                        radius(CIRCLE_RADIUS_DOUBLE_MINOR)
+                    mag.toDouble() in 4.0..5.9 ->
+                        radius(CIRCLE_RADIUS_DOUBLE_MODERATE)
+                    mag.toDouble() in 6.0..7.9 ->
+                        radius(CIRCLE_RADIUS_DOUBLE_MAJOR)
+                    mag.toDouble() >= 8 ->
+                        radius(CIRCLE_RADIUS_DOUBLE_GREAT)
+                    else ->
+                        radius(CIRCLE_RADIUS_DOUBLE)
+                }
+            } ?: run {
+                radius(CIRCLE_RADIUS_DOUBLE)
+            }
+            strokeColor(Color.argb(255, 255, 0, 0))
+            fillColor(Color.argb(64, 255, 0, 0))
+            strokeWidth(4F)
+            map.addCircle(circleOptions)
         }
     }
 

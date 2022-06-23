@@ -2,7 +2,6 @@ package com.mohammadazri.gui_bencana_alam.core.data
 
 import android.annotation.SuppressLint
 import android.os.Looper
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -10,8 +9,7 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.maps.model.LatLng
-import com.mohammadazri.gui_bencana_alam.core.data.source.local.LocalDataSource
-import com.mohammadazri.gui_bencana_alam.core.data.source.remote.RemoteDataSource
+import com.mohammadazri.gui_bencana_alam.core.data.source.remote.IRemoteDataSource
 import com.mohammadazri.gui_bencana_alam.core.data.source.remote.util.ApiResponse
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.domain.repository.IRepository
@@ -24,9 +22,8 @@ import javax.inject.Singleton
 
 @Singleton
 class Repository @Inject constructor(
-    private val localDataSource: LocalDataSource,
     private val fusedLocationClient: FusedLocationProviderClient,
-    private val remoteDataSource: RemoteDataSource,
+    private val remoteDataSource: IRemoteDataSource,
 ) : IRepository {
 
     private val latLng = MutableLiveData<LatLng?>()
@@ -51,12 +48,6 @@ class Repository @Inject constructor(
         interval = FUSED_LOCATION_INTERVAL
         fastestInterval = FUSED_LOCATION_FASTEST_INTERVAL
     }
-
-    override fun savePermissionsStatus(status: Boolean) =
-        localDataSource.savePermissionsStatus(status)
-
-    override fun loadPermissionStatus(): Boolean =
-        localDataSource.loadPermissionStatus()
 
     @SuppressLint("MissingPermission")
     override fun getCurrentLocation(): LiveData<LatLng?> {
@@ -104,13 +95,16 @@ class Repository @Inject constructor(
         return when (disasters) {
             is ApiResponse.Error -> Resource.Error(disasters.errorMessage)
             is ApiResponse.Loading -> Resource.Loading()
-            is ApiResponse.Success -> {
+            is ApiResponse.Success -> disasters.data?.let {
                 Resource.Success(
                     DataMapper.disastersResponseToDisasterDomain(
-                        disasters.data
+                        it
                     )
                 )
+            } ?: run {
+                Resource.Error("Bencana Alam tidak ditemukan")
             }
+
         }
     }
 
@@ -120,33 +114,32 @@ class Repository @Inject constructor(
         return when (disasters) {
             is ApiResponse.Error -> Resource.Error(disasters.errorMessage)
             is ApiResponse.Loading -> Resource.Loading()
-            is ApiResponse.Success -> {
+            is ApiResponse.Success -> disasters.data?.let {
                 Resource.Success(
                     DataMapper.disastersResponseToDisasterDomain(
-                        disasters.data
+                        it
                     )
                 )
+            } ?: run {
+                Resource.Error("Bencana Alam tidak ditemukan")
             }
+
         }
     }
 
     override suspend fun getDisasterById(id: String): Resource<Disaster> {
         val disaster = remoteDataSource.getDisasterById(id)
-        return when(disaster) {
+        return when (disaster) {
             is ApiResponse.Error -> Resource.Error(disaster.errorMessage)
             is ApiResponse.Loading -> Resource.Loading()
-            is ApiResponse.Success -> {
-                val disasterDTO = disaster.data
-                disasterDTO?.let {
-                    Log.d("Data", "$it")
-                    Resource.Success(
-                        DataMapper.disasterResponseToDisasterDomain(it)
-                    )
-                } ?: run {
-                    Resource.Error("Bencana Alam tidak ditemukan")
-                }
-
+            is ApiResponse.Success -> disaster.data?.let {
+                Resource.Success(
+                    DataMapper.disasterResponseToDisasterDomain(it)
+                )
+            } ?: run {
+                Resource.Error("Bencana Alam tidak ditemukan")
             }
+
         }
     }
 }

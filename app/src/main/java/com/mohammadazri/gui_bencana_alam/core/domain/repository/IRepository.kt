@@ -6,8 +6,6 @@ import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
 import com.mohammadazri.gui_bencana_alam.core.util.Resource
 
 interface IRepository {
-    fun savePermissionsStatus(status: Boolean)
-    fun loadPermissionStatus(): Boolean
     fun getCurrentLocation(): LiveData<LatLng?>
     fun stopLocationUpdates()
     fun resumeLocationUpdates()
