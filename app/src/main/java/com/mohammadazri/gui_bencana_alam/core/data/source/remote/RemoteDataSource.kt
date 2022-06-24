@@ -20,7 +20,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) :
                 disasters?.let {
                     ApiResponse.Success(it)
                 } ?: run {
-                    ApiResponse.Error(message ?: "Terjadi kesalahan")
+                    ApiResponse.Error(message ?: "Bencana Alam tidak ditemukan")
                 }
             }
             else -> {
@@ -40,7 +40,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) :
                 disasters?.let {
                     ApiResponse.Success(it)
                 } ?: run {
-                    ApiResponse.Error(message ?: "Terjadi kesalahan")
+                    ApiResponse.Error(message ?: "Bencana Alam tidak ditemukan")
                 }
             }
             else -> ApiResponse.Error("Terjadi kesalahan pada server")
@@ -57,7 +57,7 @@ class RemoteDataSource @Inject constructor(private val apiService: ApiService) :
                     Log.d("DataRemote", "$it")
                     ApiResponse.Success(it)
                 } ?: run {
-                    ApiResponse.Error("Terjadi kesalahan")
+                    ApiResponse.Error("Bencana Alam tidak ditemukan")
                 }
             }
             else -> ApiResponse.Error("Terjadi kesalahan pada server")
