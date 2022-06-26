@@ -1,10 +1,8 @@
 package com.mohammadazri.gui_bencana_alam.ui.bottomsheet
 
-import android.annotation.SuppressLint
 import android.location.Address
 import android.location.Geocoder
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,8 +14,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.mohammadazri.gui_bencana_alam.databinding.FragmentDetailDisasterDialogBinding
 import com.mohammadazri.gui_bencana_alam.ui.fragment.viewmodel.SharedViewModel
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 class DetailDisasterDialogFragment : BottomSheetDialogFragment() {
@@ -43,7 +39,6 @@ class DetailDisasterDialogFragment : BottomSheetDialogFragment() {
                 viewModel.getDisasterById(id)
                 viewModel.disasterLiveData.observe(viewLifecycleOwner) {
                     it?.let { disaster ->
-                        Log.d("DetailDisaster", "$disaster")
                         with(binding) {
                             textViewDisasterCategory.text =
                                 disaster.filter.replaceFirstChar { firstChar ->
@@ -53,15 +48,21 @@ class DetailDisasterDialogFragment : BottomSheetDialogFragment() {
                             textViewDisasterLocationValue.text = disaster.location?.let {
                                 it
                             } ?: run {
-                                viewModel.getAddress(disaster.latLng!!, requireContext())
+                                disaster.latLng?.let { latLng ->
+                                    viewModel.getAddress(latLng, requireContext())
+                                } ?: run {
+                                    "Lokasi tidak diketahui"
+                                }
                             }
 
                             textViewDisasterTimeValue.text =
                                 disaster.createdAt.subSequence(0, 20).trim()
 
                             if (disaster.filter == "gempa") {
-                                textViewDisasterMagnitudeValue.text = disaster.mag?.let {
-                                    it
+                                textViewDisasterMagnitudeValue.text = disaster.mag?.let { mag ->
+                                    mag
+                                } ?: run {
+                                    "0"
                                 }
                                 textViewDisasterMagnitude.visibility = View.VISIBLE
                                 textViewDisasterMagnitudeValue.visibility = View.VISIBLE
@@ -76,29 +77,6 @@ class DetailDisasterDialogFragment : BottomSheetDialogFragment() {
                 Toast.makeText(requireContext(), "Bencana Alam tidak ditemukan", Toast.LENGTH_SHORT)
                     .show()
                 findNavController().navigateUp()
-            }
-        }
-    }
-
-    fun getAddress(latLng: LatLng) {
-        val geocoder = Geocoder(requireContext())
-        val address: Address?
-        var fulladdress = ""
-        val addresses: List<Address>? =
-            geocoder.getFromLocation(latLng.latitude, latLng.longitude, 1)
-
-        addresses?.let {
-            if (addresses.isNotEmpty()) {
-                address = addresses[0]
-                fulladdress =
-                    address.getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex
-                var city = address.locality;
-                var state = address.adminArea;
-                var country = address.countryName;
-                var postalCode = address.postalCode;
-                var knownName = address.featureName; // Only if available else return NULL
-            } else {
-                fulladdress = "Location not found"
             }
         }
     }

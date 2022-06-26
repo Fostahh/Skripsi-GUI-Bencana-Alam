@@ -20,9 +20,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CircleOptions
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
 import com.mohammadazri.gui_bencana_alam.GeofenceHelper
 import com.mohammadazri.gui_bencana_alam.R
 import com.mohammadazri.gui_bencana_alam.core.domain.model.Disaster
@@ -94,6 +92,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             map.clear()
             addGeofence(it)
             it.map { disaster ->
+
                 placeMarker(disaster)
                 addCircle(disaster)
             }
@@ -139,6 +138,11 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             disaster.latLng?.let { latLng ->
                 position(latLng)
             }
+            if (disaster.filter == "gempa") {
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+            } else {
+                icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+            }
             title(disaster.id)
             map.addMarker(this)
         }
@@ -171,22 +175,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback, GoogleMap.OnMarkerClickList
             }
             disaster.mag?.let { mag ->
                 when {
-                    mag.toDouble() in 2.0..3.9 ->
+                    mag.toDouble() in 2.0..3.9 -> {
+                        strokeColor(Color.argb(255, 0, 0, 255))
+                        fillColor(Color.argb(64, 0, 0, 255))
                         radius(CIRCLE_RADIUS_DOUBLE_MINOR)
-                    mag.toDouble() in 4.0..5.9 ->
+                    }
+                    mag.toDouble() in 4.0..5.9 -> {
+                        strokeColor(Color.argb(255, 0, 255, 0))
+                        fillColor(Color.argb(64, 0, 255, 0))
                         radius(CIRCLE_RADIUS_DOUBLE_MODERATE)
-                    mag.toDouble() in 6.0..7.9 ->
+                    }
+                    mag.toDouble() in 6.0..7.9 -> {
+                        strokeColor(Color.argb(255, 255, 165, 0))
+                        fillColor(Color.argb(64, 255, 165, 0))
                         radius(CIRCLE_RADIUS_DOUBLE_MAJOR)
-                    mag.toDouble() >= 8 ->
+                    }
+                    mag.toDouble() >= 8 -> {
+                        strokeColor(Color.argb(255, 255, 0, 0))
+                        fillColor(Color.argb(64, 255, 0, 0))
                         radius(CIRCLE_RADIUS_DOUBLE_GREAT)
-                    else ->
+                    }
+                    else -> {
                         radius(CIRCLE_RADIUS_DOUBLE)
+                        strokeColor (Color.argb(255, 255, 0, 0))
+                        fillColor(Color.argb(64, 255, 0, 0))
+                    }
                 }
             } ?: run {
                 radius(CIRCLE_RADIUS_DOUBLE)
+                strokeColor(Color.argb(255, 0, 255, 255))
+                fillColor(Color.argb(64, 0, 255, 255))
             }
-            strokeColor(Color.argb(255, 255, 0, 0))
-            fillColor(Color.argb(64, 255, 0, 0))
             strokeWidth(4F)
             map.addCircle(circleOptions)
         }
