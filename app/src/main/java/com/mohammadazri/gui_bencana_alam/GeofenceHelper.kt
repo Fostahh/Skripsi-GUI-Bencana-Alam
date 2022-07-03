@@ -32,7 +32,10 @@ class GeofenceHelper(val context: Context) {
                         mag.toDouble() >= 8 -> GEOFENCE_RADIUS_DOUBLE_GREAT
                         else -> GEOFENCE_RADIUS_FLOAT
                     }
+                } ?: run {
+                    geofenceRadiusFloat = GEOFENCE_RADIUS_FLOAT
                 }
+                Log.d("GeofenceHelper", "$geofenceRadiusFloat")
                 listGeofence.add(
                     Geofence.Builder()
                         .setRequestId(disaster.id)
@@ -60,8 +63,10 @@ class GeofenceHelper(val context: Context) {
 
     fun getPendingIntent(): PendingIntent {
         pendingIntent?.let {
+            Log.d("GeofenceHelper", "Engga Kosong")
             return it
         } ?: run {
+            Log.d("GeofenceHelper", "Kosong")
             val intent = Intent(context, GeofenceBroadcastReceiver::class.java)
             pendingIntent =
                 PendingIntent.getBroadcast(
